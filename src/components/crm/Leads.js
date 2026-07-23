@@ -157,8 +157,46 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
     );
   };
 
+  const totalLeadsCount = filteredLeads.length;
+  const newLeadsCount = leads.filter(l => l.status && l.status.toLowerCase() === 'new').length;
+  const bookedLeadsCount = leads.filter(l => l.status && l.status.toLowerCase() === 'booked').length;
+  const convertedLeadsCount = leads.filter(l => l.status && l.status.toLowerCase() === 'converted').length;
+
   return (
     <div>
+      {/* Mini Summary Metrics Panel */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+        gap: '16px', 
+        marginBottom: '24px' 
+      }}>
+        <div style={{ backgroundColor: '#ffffff', padding: '16px 20px', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.015)' }}>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Leads</span>
+          <div style={{ fontSize: '24px', fontWeight: '850', color: 'var(--text-dark)', marginTop: '4px', display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+            {totalLeadsCount} <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)' }}>filtered</span>
+          </div>
+        </div>
+        <div style={{ backgroundColor: '#ffffff', padding: '16px 20px', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.015)' }}>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: '#3FA796', textTransform: 'uppercase', letterSpacing: '0.5px' }}>New Pipeline</span>
+          <div style={{ fontSize: '24px', fontWeight: '850', color: '#3FA796', marginTop: '4px' }}>
+            {newLeadsCount}
+          </div>
+        </div>
+        <div style={{ backgroundColor: '#ffffff', padding: '16px 20px', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.015)' }}>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: '#9B59B6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Booked Consults</span>
+          <div style={{ fontSize: '24px', fontWeight: '850', color: '#9B59B6', marginTop: '4px' }}>
+            {bookedLeadsCount}
+          </div>
+        </div>
+        <div style={{ backgroundColor: '#ffffff', padding: '16px 20px', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.015)' }}>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: '#F5A623', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Converted Patients</span>
+          <div style={{ fontSize: '24px', fontWeight: '850', color: '#F5A623', marginTop: '4px' }}>
+            {convertedLeadsCount}
+          </div>
+        </div>
+      </div>
+
       {/* Filters bar */}
       <div style={{ 
         backgroundColor: '#ffffff', 

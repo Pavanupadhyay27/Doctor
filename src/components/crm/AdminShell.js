@@ -191,6 +191,42 @@ export default function AdminShell({ onViewChange }) {
             >
               <i className="fas fa-bars"></i>
             </button>
+            {activePane !== 'dashboard' && (
+              <button 
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.location.hash = 'dashboard';
+                  }
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'var(--primary)',
+                  marginRight: '16px',
+                  fontSize: '13px',
+                  fontWeight: '750',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  transition: 'all 0.2s ease',
+                  backgroundColor: 'rgba(15, 107, 92, 0.07)',
+                  border: '1px solid rgba(15, 107, 92, 0.12)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(15, 107, 92, 0.14)';
+                  e.currentTarget.style.transform = 'translateX(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(15, 107, 92, 0.07)';
+                  e.currentTarget.style.transform = 'translateX(0)';
+                }}
+              >
+                <i className="fas fa-arrow-left"></i> Dashboard
+              </button>
+            )}
             <h2 className="admin-header-title capitalize" style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-dark)', fontFamily: 'var(--font-heading)', letterSpacing: '-0.5px' }}>
               {activePane.replace('-', ' ')}
             </h2>

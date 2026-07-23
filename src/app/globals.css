@@ -1828,7 +1828,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .admin-table tbody tr {
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
   cursor: pointer;
 }
 
@@ -2219,11 +2219,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .admin-table tbody tr {
   box-shadow: 0 4px 12px rgba(18, 33, 30, 0.015) !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease !important;
 }
 
 .admin-table tbody tr:hover {
-  transform: translateY(-2px) scale(1.002) !important;
   box-shadow: 0 12px 24px rgba(18, 33, 30, 0.045) !important;
 }
 
@@ -2343,17 +2342,16 @@ h1, h2, h3, h4, h5, h6 {
 .drawer-body .info-item {
   background-color: #ffffff !important;
   border: 1px solid rgba(15, 107, 92, 0.05) !important;
-  border-bottom: 4px solid rgba(15, 107, 92, 0.12) !important; /* 3D bevel */
+  border-bottom: 3px solid rgba(15, 107, 92, 0.12) !important; /* Static 3D bevel */
   padding: 16px 20px !important;
   border-radius: 16px !important;
   box-shadow: 0 4px 10px rgba(18, 33, 30, 0.01) !important;
-  transition: all 0.25s ease !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 
 .drawer-body .info-item:hover {
-  transform: translateY(-2px) !important;
-  border-bottom-width: 5px !important;
   box-shadow: 0 8px 16px rgba(18, 33, 30, 0.03) !important;
+  border-color: rgba(15, 107, 92, 0.15) !important;
 }
 
 .drawer-body .form-group,
