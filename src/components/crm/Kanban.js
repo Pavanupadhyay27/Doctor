@@ -205,17 +205,44 @@ export default function Kanban({ globalSearch, setGlobalSearch }) {
 
                     <div className="kanban-card-footer" style={{ borderTop: '1px solid var(--border)', marginTop: '12px', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span className="kanban-card-time" style={{ fontSize: '11px', color: 'var(--text-muted)' }}><i className="far fa-clock"></i> {lead.date}</span>
-                      <button 
-                        className="btn-icon btn-sm" 
-                        style={{ width: '24px', height: '24px', border: 'none', background: 'none', color: 'var(--primary)', cursor: 'pointer' }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveLeadId(lead.id);
-                          setDrawerTab('details');
-                        }}
-                      >
-                        <i className="fas fa-external-link-alt" style={{ fontSize: '11px' }}></i>
-                      </button>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {/* Quick-move dropdown (alternative logic to drag and drop) */}
+                        <select 
+                          value={lead.status ? lead.status.toLowerCase() : 'new'}
+                          onChange={(e) => updateLeadStatus(lead.id, e.target.value)}
+                          style={{
+                            fontSize: '11px',
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            border: '1px solid var(--border)',
+                            backgroundColor: 'var(--bg-warm)',
+                            cursor: 'pointer',
+                            color: 'var(--text-dark)',
+                            fontWeight: '700',
+                            outline: 'none'
+                          }}
+                          onClick={(e) => e.stopPropagation()} // Stop opening the drawer
+                        >
+                          <option value="new">New</option>
+                          <option value="contacted">Contacted</option>
+                          <option value="booked">Booked</option>
+                          <option value="converted">Converted</option>
+                          <option value="lost">Lost</option>
+                        </select>
+
+                        <button 
+                          className="btn-icon btn-sm" 
+                          style={{ width: '24px', height: '24px', border: 'none', background: 'none', color: 'var(--primary)', cursor: 'pointer' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveLeadId(lead.id);
+                            setDrawerTab('details');
+                          }}
+                        >
+                          <i className="fas fa-external-link-alt" style={{ fontSize: '11px' }}></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );

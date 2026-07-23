@@ -2227,112 +2227,82 @@ h1, h2, h3, h4, h5, h6 {
   border-color: rgba(15, 107, 92, 0.1) !important;
 }
 
-/* Full Screen Detailed View Overlay (drawer override) */
+/* Premium Right Side Slide-Over Drawer Styles */
 .drawer-backdrop {
   position: fixed !important;
   inset: 0 !important;
-  background-color: #F4F6F7 !important; /* Full screen slate background overlay */
+  background-color: rgba(18, 33, 30, 0) !important;
+  backdrop-filter: blur(0px) !important;
   z-index: 1000 !important;
-  opacity: 0 !important;
   pointer-events: none !important;
-  transition: opacity 0.3s ease !important;
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease !important;
 }
 
 .drawer-backdrop.active {
-  opacity: 1 !important;
+  background-color: rgba(18, 33, 30, 0.4) !important;
+  backdrop-filter: blur(5px) !important;
   pointer-events: auto !important;
 }
 
 .drawer-content {
   position: fixed !important;
-  inset: 0 !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  background-color: #F4F6F7 !important;
+  top: 0 !important;
+  right: 0 !important;
+  height: 100vh !important;
+  width: 520px !important;
+  max-width: 90vw !important;
+  background-color: var(--bg-card) !important;
+  border-left: 1px solid var(--border) !important;
+  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.08) !important;
+  z-index: 1001 !important;
   display: flex !important;
   flex-direction: column !important;
-  transform: translateY(30px) !important;
-  opacity: 0 !important;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
+  transform: translateX(100%) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .drawer-backdrop.active .drawer-content {
-  transform: translateY(0) !important;
-  opacity: 1 !important;
+  transform: translateX(0) !important;
 }
 
 .drawer-header {
-  height: 80px !important;
-  padding: 0 40px !important;
-  background-color: #ffffff !important;
-  border-bottom: 1px solid rgba(18, 33, 30, 0.06) !important;
+  padding: 24px 30px !important;
+  border-bottom: 1px solid var(--border) !important;
   display: flex !important;
-  justify-content: space-between !important;
   align-items: center !important;
+  justify-content: space-between !important;
+  background-color: #ffffff !important;
 }
 
-.drawer-header .btn-icon {
-  background-color: #F4F6F7 !important;
-  border: 1px solid rgba(18, 33, 30, 0.05) !important;
-  padding: 8px 18px !important;
-  border-radius: 10px !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  color: var(--text-dark) !important;
+.drawer-tabs {
   display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
+  border-bottom: 1px solid var(--border) !important;
+  background-color: var(--bg-warm) !important;
+  padding: 0 16px !important;
+}
+
+.drawer-tab {
+  padding: 14px 20px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: var(--text-muted) !important;
+  border-bottom: 2px solid transparent !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
 }
 
-.drawer-header .btn-icon:hover {
-  background-color: var(--primary) !important;
-  color: #ffffff !important;
-}
-
-.drawer-header .btn-icon i {
-  font-size: 11px !important;
-}
-
-.drawer-tabs {
-  padding: 0 40px !important;
-  background-color: #ffffff !important;
-  border-bottom: 1px solid rgba(18, 33, 30, 0.05) !important;
-}
-
-.drawer-tab {
-  flex-grow: 0 !important;
-  padding: 18px 30px !important;
-  font-size: 14.5px !important;
+.drawer-tab.active {
+  color: var(--primary) !important;
+  border-bottom-color: var(--primary) !important;
 }
 
 .drawer-body {
-  padding: 40px !important;
-  max-width: 1200px !important;
-  width: 100% !important;
-  margin: 0 auto !important;
-  display: grid !important;
-  grid-template-columns: 1fr 1.5fr !important;
-  gap: 30px !important;
+  flex-grow: 1 !important;
   overflow-y: auto !important;
-}
-
-.drawer-body > div {
-  grid-column: span 2 !important;
-  display: grid !important;
-  grid-template-columns: 1.1fr 1.9fr !important;
-  gap: 30px !important;
-  width: 100% !important;
-}
-
-.drawer-body .info-grid {
-  grid-column: 1 !important;
+  padding: 30px !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 16px !important;
+  gap: 20px !important;
 }
 
 /* 3D Medical Cards inside Profile Page */
