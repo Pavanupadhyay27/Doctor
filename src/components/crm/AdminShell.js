@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dashboard from './Dashboard';
 import Leads from './Leads';
 import Kanban from './Kanban';
@@ -15,6 +15,14 @@ export default function AdminShell({ onViewChange }) {
   const [activePane, setActivePane] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Shared global search term across active panes
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Automatically reset the global search term when switching sidebar views
+  useEffect(() => {
+    setSearchTerm('');
+  }, [activePane]);
 
   const handleLogout = () => {
     logout();
@@ -23,14 +31,22 @@ export default function AdminShell({ onViewChange }) {
 
   const renderActivePane = () => {
     switch (activePane) {
-      case 'dashboard': return <Dashboard onNavigate={setActivePane} />;
-      case 'leads': return <Leads />;
-      case 'kanban': return <Kanban />;
-      case 'patients': return <Patients />;
-      case 'calendar': return <Calendar />;
-      case 'templates': return <Templates />;
-      case 'analytics': return <Analytics />;
-      default: return <Dashboard onNavigate={setActivePane} />;
+      case 'dashboard': 
+        return <Dashboard onNavigate={setActivePane} />;
+      case 'leads': 
+        return <Leads globalSearch={searchTerm} setGlobalSearch={setSearchTerm} />;
+      case 'kanban': 
+        return <Kanban globalSearch={searchTerm} setGlobalSearch={setSearchTerm} />;
+      case 'patients': 
+        return <Patients globalSearch={searchTerm} setGlobalSearch={setSearchTerm} />;
+      case 'calendar': 
+        return <Calendar />;
+      case 'templates': 
+        return <Templates />;
+      case 'analytics': 
+        return <Analytics />;
+      default: 
+        return <Dashboard onNavigate={setActivePane} />;
     }
   };
 
@@ -142,10 +158,19 @@ export default function AdminShell({ onViewChange }) {
           </div>
           
           <div className="admin-actions flex items-center gap-6">
-            <div className="admin-search-wrapper hidden md:block">
-              <i className="fas fa-search"></i>
-              <input type="text" className="admin-search-input" placeholder="Search leads/patients..." />
-            </div>
+            {/* Functional search bar */}
+            {(activePane === 'leads' || activePane === 'patients' || activePane === 'kanban') && (
+              <div className="admin-search-wrapper hidden md:block">
+                <i className="fas fa-search"></i>
+                <input 
+                  type="text" 
+                  className="admin-search-input" 
+                  placeholder="Search active view..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            )}
             <button className="admin-notifications-btn relative" style={{ background: 'none', border: 'none' }}>
               <i className="far fa-bell"></i>
               <span 

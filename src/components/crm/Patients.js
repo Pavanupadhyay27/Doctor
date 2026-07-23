@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useCRM } from '@/context/CRMState';
 
-export default function Patients() {
+export default function Patients({ globalSearch, setGlobalSearch }) {
   const { 
     patients, 
     addPatientVisit, 
@@ -12,7 +12,9 @@ export default function Patients() {
   } = useCRM();
 
   // Search filter
-  const [search, setSearch] = useState('');
+  const [localSearch, setLocalSearch] = useState('');
+  const search = globalSearch !== undefined ? globalSearch : localSearch;
+  const setSearch = setGlobalSearch !== undefined ? setGlobalSearch : setLocalSearch;
 
   // Selected Patient Drawer state
   const [activePatientId, setActivePatientId] = useState(null);

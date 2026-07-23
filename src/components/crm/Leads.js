@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useCRM } from '@/context/CRMState';
 
-export default function Leads() {
+export default function Leads({ globalSearch, setGlobalSearch }) {
   const { 
     leads, 
     templates, 
@@ -14,7 +14,9 @@ export default function Leads() {
   } = useCRM();
 
   // Search & Filter state
-  const [search, setSearch] = useState('');
+  const [localSearch, setLocalSearch] = useState('');
+  const search = globalSearch !== undefined ? globalSearch : localSearch;
+  const setSearch = setGlobalSearch !== undefined ? setGlobalSearch : setLocalSearch;
   const [treatmentFilter, setTreatmentFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [sourceFilter, setSourceFilter] = useState('');
