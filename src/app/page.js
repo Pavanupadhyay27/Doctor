@@ -10,11 +10,13 @@ import Testimonials from '@/components/public/Testimonials';
 import FormWizard from '@/components/public/FormWizard';
 import AdminShell from '@/components/crm/AdminShell';
 import Login from '@/components/crm/Login';
+import TreatmentDetailPage from '@/components/public/TreatmentDetailPage';
 
 export default function Home() {
   const { addLead, isAuthenticated, isBookingModalOpen, setIsBookingModalOpen } = useCRM();
   const [activeView, setActiveView] = useState('public');
   const [selectedTreatment, setSelectedTreatment] = useState('');
+  const [activeTreatmentPageId, setActiveTreatmentPageId] = useState(null);
 
   // Active Step state for the animated Journey flow
   const [activeStep, setActiveStep] = useState(0);
@@ -113,6 +115,27 @@ export default function Home() {
       );
     }
     return <AdminShell onViewChange={setActiveView} />;
+  }
+
+  // Treatment Detail Full Page View
+  if (activeTreatmentPageId) {
+    return (
+      <TreatmentDetailPage
+        treatmentId={activeTreatmentPageId}
+        onBack={() => {
+          setActiveTreatmentPageId(null);
+          window.scrollTo(0, 0);
+        }}
+        onBook={(name) => {
+          setSelectedTreatment(name);
+          setActiveTreatmentPageId(null);
+          setTimeout(() => {
+            const contactSection = document.getElementById('contact');
+            if (contactSection) contactSection.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }}
+      />
+    );
   }
 
   return (
@@ -289,7 +312,7 @@ export default function Home() {
       </div>
 
       {/* Treatments Cards Grid */}
-      <Treatments onSelectTreatment={handleSelectTreatment} />
+      <Treatments onSelectTreatment={handleSelectTreatment} onOpenTreatmentPage={setActiveTreatmentPageId} />
 
       {/* Why Choose Us & Process Timeline */}
       <section className="section-padding bg-white reveal">

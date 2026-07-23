@@ -1,22 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useCRM } from '@/context/CRMState';
-import DetailModal from './DetailModal';
 
-export default function Treatments({ onSelectTreatment }) {
-  const { treatments, activeModalTreatmentId, setActiveModalTreatmentId } = useCRM();
+export default function Treatments({ onSelectTreatment, onOpenTreatmentPage }) {
   const [hoveredId, setHoveredId] = useState(null);
 
-  const selectedTmpl = treatments.find(t => t.id === activeModalTreatmentId);
-  const isModalOpen = !!activeModalTreatmentId;
-
   const handleLearnMore = (treatmentId) => {
-    setActiveModalTreatmentId(treatmentId);
-  };
-
-  const handleCloseModal = () => {
-    setActiveModalTreatmentId(null);
+    if (onOpenTreatmentPage) {
+      onOpenTreatmentPage(treatmentId);
+      window.scrollTo(0, 0);
+    }
   };
 
   return (
@@ -253,12 +246,6 @@ export default function Treatments({ onSelectTreatment }) {
         </div>
       </div>
 
-      <DetailModal 
-        treatment={selectedTmpl}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onBook={onSelectTreatment}
-      />
     </section>
   );
 }
