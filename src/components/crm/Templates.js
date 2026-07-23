@@ -102,9 +102,32 @@ export default function Templates() {
   };
 
   return (
-    <div className="template-grid">
+    <div 
+      style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'minmax(0, 320px) minmax(0, 1fr)', 
+        gap: '24px', 
+        alignItems: 'flex-start',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box'
+      }}
+    >
       {/* Left List Card */}
-      <div className="card template-list-card" style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '20px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div 
+        className="card template-list-card" 
+        style={{ 
+          padding: '24px', 
+          backgroundColor: '#ffffff', 
+          borderRadius: '20px', 
+          border: '1px solid var(--border)', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '16px',
+          minWidth: 0,
+          boxSizing: 'border-box'
+        }}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-dark)', margin: 0 }}>Message Templates</h3>
           <span style={{ fontSize: '11px', fontWeight: '750', color: 'var(--primary)', backgroundColor: 'rgba(15,107,92,0.06)', padding: '2px 8px', borderRadius: '10px' }}>
@@ -169,7 +192,9 @@ export default function Templates() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',
-                  boxShadow: activeId === tmpl.id ? '0 4px 12px rgba(15,107,92,0.05)' : 'none'
+                  boxShadow: activeId === tmpl.id ? '0 4px 12px rgba(15,107,92,0.05)' : 'none',
+                  minWidth: 0,
+                  boxSizing: 'border-box'
                 }}
               >
                 <div style={{
@@ -205,7 +230,20 @@ export default function Templates() {
       
       {/* Right Editor Card */}
       {activeTemplate ? (
-        <div className="card" style={{ padding: '28px', backgroundColor: '#ffffff', borderRadius: '20px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div 
+          className="card" 
+          style={{ 
+            padding: '28px', 
+            backgroundColor: '#ffffff', 
+            borderRadius: '20px', 
+            border: '1px solid var(--border)', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '20px',
+            minWidth: 0,
+            boxSizing: 'border-box'
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
             <div>
               <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Template Editor Workspace</span>
@@ -227,9 +265,16 @@ export default function Templates() {
             </span>
           </div>
           
-          <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-6">
+          <div 
+            style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(285px, 1fr))', 
+              gap: '28px',
+              width: '100%'
+            }}
+          >
             {/* Editor Inputs */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', minWidth: 0 }}>
               <div className="form-group">
                 <label className="form-label" htmlFor="template-name" style={{ fontSize: '11px', fontWeight: '750', color: 'var(--text-muted)' }}>Template Description</label>
                 <input 
@@ -295,12 +340,12 @@ export default function Templates() {
             </div>
 
             {/* Live mockup rendering */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 0 }}>
               <h4 style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '14px' }}>Device Simulation Output</h4>
               
               {/* WhatsApp Mock */}
               {activeTemplate.channel === 'whatsapp' && (
-                <div className="mock-phone" style={{ width: '100%', maxWidth: '280px', height: '380px', borderRadius: '24px', border: '8px solid #2d3748', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#e5ddd5', position: 'relative' }}>
+                <div className="mock-phone" style={{ width: '100%', maxWidth: '280px', height: '380px', borderRadius: '24px', border: '8px solid #2d3748', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#e5ddd5', position: 'relative', flexShrink: 0 }}>
                   <div style={{ backgroundColor: '#075e54', padding: '10px 12px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
                     <i className="fab fa-whatsapp" style={{ color: '#25D366', fontSize: '16px' }}></i>
                     <div>
@@ -319,7 +364,7 @@ export default function Templates() {
 
               {/* SMS Mock */}
               {activeTemplate.channel === 'sms' && (
-                <div className="mock-phone" style={{ width: '100%', maxWidth: '280px', height: '380px', borderRadius: '24px', border: '8px solid #2d3748', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#ffffff', position: 'relative' }}>
+                <div className="mock-phone" style={{ width: '100%', maxWidth: '280px', height: '380px', borderRadius: '24px', border: '8px solid #2d3748', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#ffffff', position: 'relative', flexShrink: 0 }}>
                   <div style={{ backgroundColor: '#f4f4f5', padding: '10px 12px', borderBottom: '1px solid #e4e4e7', textAlign: 'center', fontSize: '12px', color: '#18181b', fontWeight: '600' }}>
                     +91 98765 43210
                   </div>
@@ -333,7 +378,7 @@ export default function Templates() {
 
               {/* Email Mock */}
               {activeTemplate.channel === 'email' && (
-                <div className="mock-phone" style={{ width: '100%', maxWidth: '290px', height: '380px', borderRadius: '12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#ffffff', boxShadow: '0 4px 14px rgba(0,0,0,0.05)' }}>
+                <div className="mock-phone" style={{ width: '100%', maxWidth: '290px', height: '380px', borderRadius: '12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#ffffff', boxShadow: '0 4px 14px rgba(0,0,0,0.05)', flexShrink: 0 }}>
                   <div style={{ backgroundColor: 'var(--bg-dark)', padding: '10px 14px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11.5px' }}>
                     <i className="fas fa-envelope-open" style={{ color: 'var(--accent)' }}></i>
                     <span style={{ fontWeight: '600' }}>Aura Concierge Mailer</span>
