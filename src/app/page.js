@@ -119,7 +119,7 @@ export default function Home() {
     if (!isAuthenticated) {
       return (
         <div className="relative min-h-screen bg-[#FAF9F6]">
-          <Navigation activeView={activeView} onViewChange={setActiveView} />
+          <Navigation activeView={activeView} onViewChange={setActiveView} onOpenTreatmentPage={setActiveTreatmentPageId} />
           <div className="pt-20">
             <Login />
           </div>
@@ -153,7 +153,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen bg-[#FAF9F6] text-[#1E2A28]">
       {/* Navbar */}
-      <Navigation activeView={activeView} onViewChange={setActiveView} />
+      <Navigation activeView={activeView} onViewChange={setActiveView} onOpenTreatmentPage={setActiveTreatmentPageId} />
 
       {/* Hero (Covers whole window with Indian Doctor background) */}
       <Hero />
