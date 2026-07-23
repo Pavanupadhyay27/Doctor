@@ -67,23 +67,34 @@ export default function Analytics() {
     ? `${(optimizedTime/60).toFixed(1)} hrs` 
     : `${optimizedTime} mins`;
 
+  const getShortName = (name) => {
+    if (name.includes('Laser')) return 'Laser Skin';
+    if (name.includes('Botox')) return 'Botox & Fillers';
+    if (name.includes('Chemical')) return 'Chemical Peels';
+    if (name.includes('Acne')) return 'Acne Therapy';
+    if (name.includes('General')) return 'General Consult';
+    return name;
+  };
+
   return (
     <div>
       {/* Top Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-6 mb-6">
         {/* Treatment Bar Chart */}
-        <div className="card analytics-chart-card">
-          <h3 style={{ fontSize: '15px', marginBottom: '20px', fontWeight: '600' }}><i className="fas fa-chart-bar"></i> Leads Interest by Treatment Type</h3>
-          <div className="svg-chart-container">
+        <div className="card analytics-chart-card" style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+          <h3 style={{ fontSize: '15px', marginBottom: '24px', fontWeight: '850', color: 'var(--text-dark)' }}>
+            <i className="fas fa-chart-bar" style={{ color: 'var(--primary)', marginRight: '8px' }}></i> Leads Interest by Treatment Type
+          </h3>
+          <div className="svg-chart-container" style={{ paddingBottom: '20px', height: '260px' }}>
             {barData.map(([name, count]) => {
               const percentHeight = (count / maxBarVal) * 85;
-              const shortLabel = name.split(' ')[0] + (name.split(' ')[1] ? ' ' + name.split(' ')[1][0] + '.' : '');
+              const shortLabel = getShortName(name);
               return (
                 <div key={name} className="chart-bar-wrapper">
                   <div className="chart-bar" style={{ height: `${percentHeight}%` }}>
                     <span className="chart-bar-tooltip">{count} Leads</span>
                   </div>
-                  <span className="chart-bar-label" title={name}>{shortLabel}</span>
+                  <span className="chart-bar-label" title={name} style={{ textAlign: 'center' }}>{shortLabel}</span>
                 </div>
               );
             })}
@@ -91,55 +102,78 @@ export default function Analytics() {
         </div>
         
         {/* Source Donut Chart */}
-        <div className="card analytics-chart-card">
-          <h3 style={{ fontSize: '15px', marginBottom: '20px', fontWeight: '600' }}><i className="fas fa-chart-pie"></i> Lead Acquisition Channels</h3>
-          <div className="donut-chart-container">
+        <div className="card analytics-chart-card" style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <h3 style={{ fontSize: '15px', marginBottom: '24px', fontWeight: '850', color: 'var(--text-dark)', alignSelf: 'flex-start' }}>
+            <i className="fas fa-chart-pie" style={{ color: 'var(--accent)', marginRight: '8px' }}></i> Lead Acquisition Channels
+          </h3>
+          <div className="donut-chart-container" style={{ margin: '10px 0 20px 0' }}>
             <div className="donut-ring" style={{ background: conicBg }}>
               <div className="donut-hole"></div>
             </div>
           </div>
           
-          <div className="donut-legend grid grid-cols-2 gap-4 mt-4 text-xs">
+          <div className="donut-legend grid grid-cols-2 gap-4 mt-auto w-full text-xs" style={{ borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
             <div className="legend-item flex items-center gap-2">
               <div className="legend-color color-1 w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--primary)' }}></div>
-              <span>Web: <b>{sourceCounts['Website Form']}</b> ({webPct}%)</span>
+              <span style={{ fontSize: '11.5px', fontWeight: '600', color: 'var(--text-dark)' }}>Web: <b>{sourceCounts['Website Form']}</b> ({webPct}%)</span>
             </div>
             <div className="legend-item flex items-center gap-2">
               <div className="legend-color color-2 w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--accent)' }}></div>
-              <span>WhatsApp: <b>{sourceCounts['WhatsApp Click']}</b> ({waPct}%)</span>
+              <span style={{ fontSize: '11.5px', fontWeight: '600', color: 'var(--text-dark)' }}>WhatsApp: <b>{sourceCounts['WhatsApp Click']}</b> ({waPct}%)</span>
             </div>
             <div className="legend-item flex items-center gap-2">
               <div className="legend-color color-3 w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--info)' }}></div>
-              <span>Instagram: <b>{sourceCounts['Instagram Ad']}</b> ({igPct}%)</span>
+              <span style={{ fontSize: '11.5px', fontWeight: '600', color: 'var(--text-dark)' }}>Instagram: <b>{sourceCounts['Instagram Ad']}</b> ({igPct}%)</span>
             </div>
             <div className="legend-item flex items-center gap-2">
               <div className="legend-color color-4 w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--warning)' }}></div>
-              <span>Referral: <b>{sourceCounts['Doctor Referral']}</b> ({refPct}%)</span>
+              <span style={{ fontSize: '11.5px', fontWeight: '600', color: 'var(--text-dark)' }}>Referral: <b>{sourceCounts['Doctor Referral']}</b> ({refPct}%)</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Performance Metrics */}
-      <div className="metrics-row">
-        <div className="metric-card">
-          <span className="metric-title" style={{ marginBottom: '8px' }}>Total Logged Leads</span>
-          <span className="metric-value">{totalLeads}</span>
+      <div className="metrics-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+        
+        {/* Total Logged Leads */}
+        <div className="metric-card" style={{ padding: '20px 24px', backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid var(--border)', borderLeft: '4px solid var(--primary)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="metric-title" style={{ fontSize: '11.5px', fontWeight: '750', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Total Logged Leads</span>
+            <i className="fas fa-users" style={{ color: 'var(--primary)', opacity: 0.6, fontSize: '14px' }}></i>
+          </div>
+          <span className="metric-value" style={{ fontSize: '26px', fontWeight: '850', color: 'var(--text-dark)' }}>{totalLeads}</span>
         </div>
-        <div className="metric-card">
-          <span className="metric-title" style={{ marginBottom: '8px' }}>Net Conversion Rate</span>
-          <span className="metric-value">{conversionRate}%</span>
+
+        {/* Net Conversion Rate */}
+        <div className="metric-card" style={{ padding: '20px 24px', backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid var(--border)', borderLeft: '4px solid var(--accent)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="metric-title" style={{ fontSize: '11.5px', fontWeight: '750', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Net Conversion Rate</span>
+            <i className="fas fa-percentage" style={{ color: 'var(--accent)', opacity: 0.6, fontSize: '14px' }}></i>
+          </div>
+          <span className="metric-value" style={{ fontSize: '26px', fontWeight: '850', color: 'var(--text-dark)' }}>{conversionRate}%</span>
         </div>
-        <div className="metric-card">
-          <span className="metric-title" style={{ marginBottom: '8px' }}>Average Response Time</span>
-          <span className="metric-value">{responseTimeStr}</span>
+
+        {/* Average Response Time */}
+        <div className="metric-card" style={{ padding: '20px 24px', backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid var(--border)', borderLeft: '4px solid var(--info)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="metric-title" style={{ fontSize: '11.5px', fontWeight: '750', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Avg Response Time</span>
+            <i className="fas fa-clock" style={{ color: 'var(--info)', opacity: 0.6, fontSize: '14px' }}></i>
+          </div>
+          <span className="metric-value" style={{ fontSize: '26px', fontWeight: '850', color: 'var(--text-dark)' }}>{responseTimeStr}</span>
         </div>
-        <div className="metric-card">
-          <span className="metric-title" style={{ marginBottom: '8px' }}>Audited CRM Compliance</span>
-          <span className="metric-value" style={{ color: 'var(--success)', fontSize: '20px' }}>
-            <i className="fas fa-shield-alt"></i> HIPAA SECURE
+
+        {/* Audited CRM Compliance */}
+        <div className="metric-card" style={{ padding: '20px 24px', backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid var(--border)', borderLeft: '4px solid var(--success)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="metric-title" style={{ fontSize: '11.5px', fontWeight: '750', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Security & Audit</span>
+            <i className="fas fa-shield-alt" style={{ color: 'var(--success)', opacity: 0.6, fontSize: '14px' }}></i>
+          </div>
+          <span className="metric-value" style={{ fontSize: '18px', fontWeight: '850', color: 'var(--success)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            HIPAA SECURE
           </span>
         </div>
+
       </div>
     </div>
   );
