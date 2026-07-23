@@ -25,19 +25,18 @@ export default function Login() {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
-      setError('Please enter a valid email address.');
+      setError('Please type a valid email.');
       return;
     }
 
     setLoading(true);
 
-    // Instant validation feel (no artificial shaking or delay transitions)
     setTimeout(() => {
       const success = login(email, password);
       setLoading(false);
       
       if (!success) {
-        setError('Invalid email or password. Please try again.');
+        setError('Invalid credentials. Check details below.');
       }
     }, 400);
   };
@@ -52,13 +51,13 @@ export default function Login() {
       backgroundColor: '#ffffff'
     }}>
       
-      {/* Left side: Premium Doctor image (Hidden on mobile) */}
+      {/* Left Pane - Clinic Image */}
       <div 
         style={{
           width: '55%',
           position: 'relative',
           backgroundColor: '#050b0a',
-          borderRight: '1px solid var(--border)'
+          borderRight: '1px solid rgba(0, 0, 0, 0.05)'
         }}
         className="hidden md:block"
       >
@@ -68,10 +67,10 @@ export default function Login() {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundImage: 'url("/doctor_login.png")',
+          backgroundImage: 'url("/Dr/doctor_login.png")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'brightness(0.85)'
+          filter: 'brightness(0.8)'
         }} />
         
         {/* Soft luxury branding stamp */}
@@ -85,7 +84,7 @@ export default function Login() {
         }}>
           <h1 style={{ 
             fontFamily: 'var(--font-heading)', 
-            fontSize: '32px', 
+            fontSize: '34px', 
             fontWeight: '850', 
             color: '#ffffff', 
             letterSpacing: '-1px', 
@@ -94,47 +93,55 @@ export default function Login() {
           }}>
             Aura Clinic
           </h1>
-          <p style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.7)', marginTop: '8px', lineHeight: '1.4' }}>
+          <p style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.65)', marginTop: '8px', lineHeight: '1.4' }}>
             Board-certified clinical dermatology, laser therapies, and advanced skin care technologies.
           </p>
         </div>
       </div>
 
-      {/* Right side: Login form (Instant, static, aesthetic & clean) */}
+      {/* Right Pane - Premium Login UI */}
       <div 
         style={{
           flexGrow: 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '40px 30px',
-          backgroundColor: '#ffffff'
+          padding: '40px 32px',
+          backgroundColor: '#FAF9F6' // Very soft pristine grey
         }}
         className="w-full md:w-[45%]"
       >
-        <div style={{ width: '100%', maxWidth: '380px' }}>
+        <div style={{ 
+          width: '100%', 
+          maxWidth: '400px',
+          backgroundColor: '#ffffff',
+          padding: '40px 36px',
+          borderRadius: '24px',
+          border: '1px solid rgba(0, 0, 0, 0.04)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.02)'
+        }}>
           
           {/* Header */}
-          <div style={{ marginBottom: '28px' }}>
+          <div style={{ marginBottom: '28px', textAlign: 'center' }}>
             <div style={{ 
-              width: '44px',
-              height: '44px',
-              borderRadius: '12px', 
-              backgroundColor: '#F8FAFC', 
-              border: '1px solid var(--border)',
-              color: 'var(--text-dark)', 
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%', 
+              backgroundColor: '#0F6B5C', 
+              color: '#ffffff', 
               display: 'inline-flex',
               alignItems: 'center', 
               justifyContent: 'center', 
-              fontSize: '16px', 
-              marginBottom: '14px'
+              fontSize: '18px', 
+              marginBottom: '16px',
+              boxShadow: '0 8px 20px rgba(15, 107, 92, 0.15)'
             }}>
-              <i className="fas fa-lock"></i>
+              <i className="fas fa-shield-halved"></i>
             </div>
             <h2 style={{ fontSize: '22px', fontWeight: '850', color: 'var(--text-dark)', marginBottom: '6px', letterSpacing: '-0.5px' }}>
-              Admin Portal
+              Staff Sign In
             </h2>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+            <p style={{ fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
               Sign in with credentials to access patient logs and clinical metrics.
             </p>
           </div>
@@ -164,7 +171,7 @@ export default function Login() {
             
             {/* Email field */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '0.5px', textTransform: 'uppercase' }} htmlFor="login-email">
+              <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '0.5px', textTransform: 'uppercase' }} htmlFor="login-email">
                 Email Address
               </label>
               <div style={{ position: 'relative' }}>
@@ -182,8 +189,8 @@ export default function Login() {
                     padding: '12px 12px 12px 38px',
                     fontSize: '14px',
                     color: 'var(--text-dark)',
-                    backgroundColor: '#ffffff',
-                    border: focusedField === 'email' ? '1.5px solid var(--text-dark)' : '1.5px solid var(--border)',
+                    backgroundColor: '#FAF9F6',
+                    border: focusedField === 'email' ? '1.5px solid #0F6B5C' : '1.5px solid rgba(0, 0, 0, 0.05)',
                     borderRadius: '10px',
                     outline: 'none',
                     transition: 'none',
@@ -192,10 +199,10 @@ export default function Login() {
                 />
                 <i className="far fa-envelope" style={{ 
                   position: 'absolute', 
-                  left: '13px', 
+                  left: '14px', 
                   top: '50%', 
                   transform: 'translateY(-50%)', 
-                  color: focusedField === 'email' ? 'var(--text-dark)' : 'var(--text-muted)', 
+                  color: focusedField === 'email' ? '#0F6B5C' : 'var(--text-muted)', 
                   fontSize: '13.5px',
                   pointerEvents: 'none'
                 }} />
@@ -204,7 +211,7 @@ export default function Login() {
 
             {/* Password field */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '0.5px', textTransform: 'uppercase' }} htmlFor="login-password">
+              <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '0.5px', textTransform: 'uppercase' }} htmlFor="login-password">
                 Portal Password
               </label>
               <div style={{ position: 'relative' }}>
@@ -222,8 +229,8 @@ export default function Login() {
                     padding: '12px 36px 12px 38px',
                     fontSize: '14px',
                     color: 'var(--text-dark)',
-                    backgroundColor: '#ffffff',
-                    border: focusedField === 'password' ? '1.5px solid var(--text-dark)' : '1.5px solid var(--border)',
+                    backgroundColor: '#FAF9F6',
+                    border: focusedField === 'password' ? '1.5px solid #0F6B5C' : '1.5px solid rgba(0, 0, 0, 0.05)',
                     borderRadius: '10px',
                     outline: 'none',
                     transition: 'none',
@@ -232,10 +239,10 @@ export default function Login() {
                 />
                 <i className="fas fa-lock" style={{ 
                   position: 'absolute', 
-                  left: '13px', 
+                  left: '14px', 
                   top: '50%', 
                   transform: 'translateY(-50%)', 
-                  color: focusedField === 'password' ? 'var(--text-dark)' : 'var(--text-muted)', 
+                  color: focusedField === 'password' ? '#0F6B5C' : 'var(--text-muted)', 
                   fontSize: '13.5px',
                   pointerEvents: 'none'
                 }} />
@@ -268,12 +275,12 @@ export default function Login() {
               style={{
                 width: '100%',
                 padding: '12px 22px',
-                backgroundColor: 'var(--text-dark)',
+                backgroundColor: '#0F6B5C',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '10px',
                 fontSize: '14px',
-                fontWeight: '700',
+                fontWeight: '750',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -287,10 +294,10 @@ export default function Login() {
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <i className="fas fa-circle-notch fa-spin"></i> Authenticating...
+                  <i className="fas fa-circle-notch fa-spin"></i> Loading...
                 </span>
               ) : (
-                <>Sign In to Portal <i className="fas fa-sign-in-alt"></i></>
+                <>Sign In to Suite <i className="fas fa-sign-in-alt"></i></>
               )}
             </button>
           </form>
@@ -299,8 +306,8 @@ export default function Login() {
           <div style={{
             marginTop: '28px',
             padding: '14px',
-            backgroundColor: '#F8FAFC',
-            border: '1px solid var(--border)',
+            backgroundColor: '#FAF9F5',
+            border: '1px dashed rgba(15, 107, 92, 0.15)',
             borderRadius: '12px',
             fontSize: '12px',
             color: 'var(--text-muted)',
@@ -311,11 +318,11 @@ export default function Login() {
             <div style={{ fontWeight: '800', color: 'var(--text-dark)' }}>Demo Account Details:</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>Email:</span>
-              <code style={{ background: '#ffffff', border: '1px solid var(--border)', padding: '2px 6px', borderRadius: '4px', color: 'var(--text-dark)', fontWeight: '700' }}>admin@auraclinic.in</code>
+              <code style={{ background: '#ffffff', border: '1px solid var(--border)', padding: '2px 6px', borderRadius: '4px', color: '#0F6B5C', fontWeight: '700' }}>admin@auraclinic.in</code>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>Password:</span>
-              <code style={{ background: '#ffffff', border: '1px solid var(--border)', padding: '2px 6px', borderRadius: '4px', color: 'var(--text-dark)', fontWeight: '700' }}>AuraCRMProtect2026!</code>
+              <code style={{ background: '#ffffff', border: '1px solid var(--border)', padding: '2px 6px', borderRadius: '4px', color: '#0F6B5C', fontWeight: '700' }}>AuraCRMProtect2026!</code>
             </div>
           </div>
 
