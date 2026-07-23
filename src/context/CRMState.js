@@ -45,10 +45,24 @@ const MOCK_TREATMENTS = [
 // Data normalizers for Supabase column mapping compatibility
 const mapLead = (lead) => {
   if (!lead) return lead;
+
+  let history = [];
+  if (lead.notes && Array.isArray(lead.notes)) {
+    history = lead.notes.map(n => ({
+      type: n.system ? 'system' : 'note',
+      author: n.system ? 'System' : 'Staff Member',
+      date: n.created_at ? new Date(n.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+      text: n.text
+    }));
+  } else if (lead.history && Array.isArray(lead.history)) {
+    history = lead.history;
+  }
+
   return {
     ...lead,
     treatment: lead.treatment || lead.treatment_name || 'General Consultation',
-    date: lead.date || (lead.created_at ? lead.created_at.split('T')[0] : '')
+    date: lead.date || (lead.created_at ? lead.created_at.split('T')[0] : ''),
+    history: history
   };
 };
 
