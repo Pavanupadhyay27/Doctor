@@ -61,17 +61,20 @@ export default function Login() {
         }}
         className="hidden md:block"
       >
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundImage: 'url("/Dr/doctor_login.png")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'brightness(0.8)'
-        }} />
+        <img
+          src="/doctor_login.png"
+          alt="Aura Clinic Doctor"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center',
+            filter: 'brightness(0.8)'
+          }}
+        />
         
         {/* Soft luxury branding stamp */}
         <div style={{
