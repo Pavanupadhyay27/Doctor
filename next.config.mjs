@@ -2,7 +2,7 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
-  basePath: '/Dr',
+  // basePath: '/Dr',
 };
 
 export default nextConfig;
