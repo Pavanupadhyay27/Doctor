@@ -14,53 +14,54 @@ export default function Hero() {
   return (
     <section 
       className="relative w-full h-screen flex items-center overflow-hidden" 
-      style={{ minHeight: '100vh', backgroundColor: '#12211E' }}
+      style={{ minHeight: '100vh', backgroundColor: '#FAF9F6' }}
     >
-      {/* Background Doctor Portrait aligned strictly to the right */}
+      {/* Bright full-width background photo */}
       <div 
-        className="absolute right-0 top-0 h-full w-full md:w-[50%] z-0"
+        className="absolute inset-0 z-0"
         style={{ 
           pointerEvents: 'none',
           opacity: isMounted ? 1 : 0,
-          transform: isMounted ? 'scale(1)' : 'scale(1.04)',
-          transition: 'opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1), transform 1.8s cubic-bezier(0.16, 1, 0.3, 1)'
+          transform: isMounted ? 'scale(1)' : 'scale(1.03)',
+          transition: 'opacity 1.6s cubic-bezier(0.16, 1, 0.3, 1), transform 1.6s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
         <img 
           src="/indian_doctor.png" 
           alt="Aura Clinic Dermatologist Specialist" 
           className="w-full h-full object-cover"
-          style={{ objectPosition: 'center top' }}
+          style={{ objectPosition: 'right center' }}
         />
-        {/* Mobile/Tablet Overlay: Fades image into background */}
+        
+        {/* Soft, premium light gradient masks for readability */}
+        {/* Desktop: Fade from warm-light cream to transparent */}
+        <div 
+          className="absolute inset-0 hidden md:block"
+          style={{
+            background: 'linear-gradient(to right, rgba(250, 249, 246, 0.96) 0%, rgba(250, 249, 246, 0.85) 40%, rgba(250, 249, 246, 0.4) 60%, rgba(250, 249, 246, 0) 85%)'
+          }}
+        ></div>
+
+        {/* Mobile: Top-to-bottom soft cream fade */}
         <div 
           className="absolute inset-0 block md:hidden"
           style={{
-            background: 'linear-gradient(to bottom, rgba(18,33,30,0.85) 0%, rgba(18,33,30,0.95) 100%)'
+            background: 'linear-gradient(to bottom, rgba(250, 249, 246, 0.95) 0%, rgba(250, 249, 246, 0.85) 50%, rgba(250, 249, 246, 0.3) 100%)'
           }}
         ></div>
       </div>
 
-      {/* Desktop Left-to-Right Fade Mask */}
-      <div 
-        className="absolute inset-0 hidden md:block z-5"
-        style={{
-          background: 'linear-gradient(to right, #12211E 0%, #12211E 45%, rgba(18,33,30,0.9) 55%, rgba(18,33,30,0.2) 75%, transparent 100%)',
-          pointerEvents: 'none'
-        }}
-      ></div>
-      
       {/* Landing Page Content Overlay */}
-      <div className="container relative z-10 w-full px-4 md:px-8 mx-auto" style={{ zIndex: 10 }}>
+      <div className="container relative z-10 w-full px-6 md:px-12 mx-auto" style={{ zIndex: 10 }}>
         <div className="max-w-xl text-left">
           
           <h1 
             style={{ 
-              color: '#ffffff',
-              fontSize: 'clamp(2.5rem, 5.5vw, 4rem)',
+              color: 'var(--text-dark)',
+              fontSize: 'clamp(2.5rem, 5.5vw, 4.2rem)',
               lineHeight: '1.15',
               fontFamily: 'var(--font-heading)',
-              fontWeight: 800,
+              fontWeight: 850,
               letterSpacing: '-1px',
               opacity: isMounted ? 1 : 0,
               transform: isMounted ? 'translateY(0)' : 'translateY(24px)',
@@ -68,15 +69,15 @@ export default function Hero() {
             }}
           >
             Healthy, <br className="hidden md:block" />
-            Radiant Skin
+            <span style={{ color: 'var(--primary)' }}>Radiant Skin</span>
           </h1>
 
           <p 
             style={{
-              fontSize: '18px',
-              color: 'rgba(255, 255, 255, 0.85)',
-              margin: '24px 0 36px 0',
-              lineHeight: '1.6',
+              fontSize: '17px',
+              color: 'var(--text-muted)',
+              margin: '20px 0 32px 0',
+              lineHeight: '1.65',
               maxWidth: '460px',
               fontFamily: 'var(--font-body)',
               opacity: isMounted ? 1 : 0,
@@ -85,7 +86,7 @@ export default function Hero() {
               transitionDelay: '150ms'
             }}
           >
-            Advanced clinical dermatology and laser rejuvenation therapies custom-tailored for your unique skin by Dr. Ananya Sharma.
+            Advanced clinical dermatology and laser aesthetics custom-tailored for your unique skin by Dr. Ananya Sharma.
           </p>
 
           <div 
@@ -99,8 +100,8 @@ export default function Hero() {
           >
             <button 
               onClick={() => setIsBookingModalOpen(true)}
-              className="btn btn-accent px-8 py-4 shadow-lg shadow-coral-500/10 text-white"
-              style={{ borderRadius: '8px', fontSize: '15px', fontWeight: '600', border: 'none', cursor: 'pointer' }}
+              className="btn btn-primary px-8 py-4 shadow-lg text-white"
+              style={{ borderRadius: '12px', fontSize: '15px', fontWeight: '700', border: 'none', cursor: 'pointer' }}
             >
               Book Consultation <i className="fas fa-arrow-right" style={{ marginLeft: '8px' }}></i>
             </button>
