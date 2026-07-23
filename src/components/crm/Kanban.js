@@ -157,24 +157,15 @@ export default function Kanban({ globalSearch, setGlobalSearch }) {
         const colLeads = filteredLeads.filter(l => l.status && l.status.toLowerCase() === col);
         const colColor = getColColor(col);
         
-        return (
+         return (
           <div 
             key={col} 
             className="kanban-column"
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, col)}
-            style={{ borderTop: `4px solid ${colColor}` }}
           >
             <div className="kanban-column-header">
-              <span className="kanban-column-title">
-                <span style={{ 
-                  width: '8px', 
-                  height: '8px', 
-                  borderRadius: '50%', 
-                  backgroundColor: colColor, 
-                  display: 'inline-block',
-                  marginRight: '6px'
-                }}></span>
+              <span className="kanban-column-title" style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-dark)' }}>
                 {getColHeaderLabel(col)}
               </span>
               <span className="kanban-column-count">{colLeads.length}</span>
@@ -182,18 +173,8 @@ export default function Kanban({ globalSearch, setGlobalSearch }) {
             
             <div className="kanban-cards-container">
               {colLeads.map(lead => {
-                let sourceBg = 'rgba(63, 167, 150, 0.08)';
-                let sourceColor = '#3FA796';
-                if (lead.source === 'Website Form' || lead.source === 'Website') {
-                  sourceBg = 'rgba(58, 134, 200, 0.08)';
-                  sourceColor = '#3A86C8';
-                } else if (lead.source === 'WhatsApp' || lead.source === 'WhatsApp Click') {
-                  sourceBg = 'rgba(63, 167, 150, 0.08)';
-                  sourceColor = '#3FA796';
-                } else {
-                  sourceBg = 'rgba(245, 166, 35, 0.08)';
-                  sourceColor = '#F5A623';
-                }
+                const sourceBg = '#F1F5F9';
+                const sourceColor = '#475569';
 
                 return (
                   <div 

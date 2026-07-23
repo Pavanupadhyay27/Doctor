@@ -2000,7 +2000,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .kanban-column {
-  flex: 1 0 290px;
+  flex: 1 1 180px;
   background-color: #F4F6F7;
   border-radius: 20px;
   border: 1px solid rgba(18, 33, 30, 0.05);
