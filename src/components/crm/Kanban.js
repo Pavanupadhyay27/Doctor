@@ -14,7 +14,7 @@ export default function Kanban() {
 
   const activeLead = leads.find(l => l.id === activeLeadId);
 
-  const columns = ['New', 'Contacted', 'Booked', 'Converted', 'Lost'];
+  const columns = ['new', 'contacted', 'booked', 'converted', 'lost'];
 
   const handleDragStart = (e, leadId) => {
     e.dataTransfer.setData('text/plain', leadId);
@@ -33,13 +33,13 @@ export default function Kanban() {
   };
 
   const getColHeaderLabel = (col) => {
-    switch (col) {
-      case 'New': return 'NEW INQUIRIES';
-      case 'Contacted': return 'CONTACTED';
-      case 'Booked': return 'CONSULT BOOKED';
-      case 'Converted': return 'CONVERTED';
-      case 'Lost': return 'NOT INTERESTED';
-      default: return col;
+    switch (col.toLowerCase()) {
+      case 'new': return 'NEW INQUIRIES';
+      case 'contacted': return 'CONTACTED';
+      case 'booked': return 'CONSULT BOOKED';
+      case 'converted': return 'CONVERTED';
+      case 'lost': return 'NOT INTERESTED';
+      default: return col.toUpperCase();
     }
   };
 
@@ -74,7 +74,7 @@ export default function Kanban() {
   return (
     <div className="kanban-board">
       {columns.map(col => {
-        const colLeads = leads.filter(l => l.status === col);
+        const colLeads = leads.filter(l => l.status && l.status.toLowerCase() === col);
         
         return (
           <div 
@@ -189,14 +189,14 @@ export default function Kanban() {
                     <select 
                       id="drawer-status-select" 
                       className="form-select"
-                      value={activeLead.status}
+                      value={activeLead.status ? activeLead.status.toLowerCase() : ''}
                       onChange={(e) => updateLeadStatus(activeLead.id, e.target.value)}
                     >
-                      <option value="New">New Lead</option>
-                      <option value="Contacted">Contacted</option>
-                      <option value="Booked">Consultation Booked</option>
-                      <option value="Converted">Converted Patient</option>
-                      <option value="Lost">Not Interested</option>
+                      <option value="new">New Lead</option>
+                      <option value="contacted">Contacted</option>
+                      <option value="booked">Consultation Booked</option>
+                      <option value="converted">Converted Patient</option>
+                      <option value="lost">Not Interested</option>
                     </select>
                   </div>
 

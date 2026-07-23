@@ -7,8 +7,8 @@ export default function Dashboard({ onNavigate }) {
   const { leads, appointments } = useCRM();
 
   // Metrics calculations
-  const newCount = leads.filter(l => l.status === 'New').length;
-  const contactedCount = leads.filter(l => l.status === 'Contacted').length;
+  const newCount = leads.filter(l => l.status && l.status.toLowerCase() === 'new').length;
+  const contactedCount = leads.filter(l => l.status && l.status.toLowerCase() === 'contacted').length;
   
   const today = new Date();
   const nextWeek = new Date(today);
@@ -19,7 +19,7 @@ export default function Dashboard({ onNavigate }) {
   }).length;
 
   const totalLeads = leads.length;
-  const convertedCount = leads.filter(l => l.status === 'Converted').length;
+  const convertedCount = leads.filter(l => l.status && l.status.toLowerCase() === 'converted').length;
   const conversionRate = totalLeads > 0 ? Math.round((convertedCount / totalLeads) * 100) : 0;
 
   // Flatten and gather chronological logs

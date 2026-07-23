@@ -32,7 +32,7 @@ export default function Leads() {
                           lead.email.toLowerCase().includes(search.toLowerCase()) ||
                           lead.phone.includes(search);
     const matchesTreatment = !treatmentFilter || lead.treatment === treatmentFilter;
-    const matchesStatus = !statusFilter || lead.status === statusFilter;
+    const matchesStatus = !statusFilter || (lead.status && lead.status.toLowerCase() === statusFilter.toLowerCase());
     const matchesSource = !sourceFilter || lead.source === sourceFilter;
 
     return matchesSearch && matchesTreatment && matchesStatus && matchesSource;
@@ -118,11 +118,11 @@ export default function Leads() {
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="">All Statuses</option>
-          <option value="New">New</option>
-          <option value="Contacted">Contacted</option>
-          <option value="Booked">Consult Booked</option>
-          <option value="Converted">Converted</option>
-          <option value="Lost">Lost</option>
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="booked">Consult Booked</option>
+          <option value="converted">Converted</option>
+          <option value="lost">Lost</option>
         </select>
 
         <select 
@@ -230,14 +230,14 @@ export default function Leads() {
                     <select 
                       id="drawer-status-select" 
                       className="form-select"
-                      value={activeLead.status}
+                      value={activeLead.status ? activeLead.status.toLowerCase() : ''}
                       onChange={(e) => updateLeadStatus(activeLead.id, e.target.value)}
                     >
-                      <option value="New">New Lead</option>
-                      <option value="Contacted">Contacted</option>
-                      <option value="Booked">Consultation Booked</option>
-                      <option value="Converted">Converted Patient</option>
-                      <option value="Lost">Not Interested</option>
+                      <option value="new">New Lead</option>
+                      <option value="contacted">Contacted</option>
+                      <option value="booked">Consultation Booked</option>
+                      <option value="converted">Converted Patient</option>
+                      <option value="lost">Not Interested</option>
                     </select>
                   </div>
 

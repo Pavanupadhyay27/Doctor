@@ -57,9 +57,9 @@ export default function Analytics() {
   )`;
 
   // Conversion calculations
-  const convertedCount = leads.filter(l => l.status === 'Converted').length;
+  const convertedCount = leads.filter(l => l.status && l.status.toLowerCase() === 'converted').length;
   const conversionRate = totalLeads > 0 ? Math.round((convertedCount / totalLeads) * 100) : 0;
-  const contactedLeads = leads.filter(l => l.status !== 'New').length;
+  const contactedLeads = leads.filter(l => l.status && l.status.toLowerCase() !== 'new').length;
   const baseTime = 180; // 180 mins
   const optimizedTime = Math.max(12, baseTime - contactedLeads * 8);
 
