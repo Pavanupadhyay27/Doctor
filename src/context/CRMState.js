@@ -68,6 +68,15 @@ const mapAppointment = (appointment) => {
   };
 };
 
+const mapTemplate = (tmpl) => {
+  if (!tmpl) return tmpl;
+  return {
+    ...tmpl,
+    channel: tmpl.channel ? tmpl.channel.toLowerCase() : 'whatsapp',
+    content: tmpl.content || tmpl.body || ''
+  };
+};
+
 export function CRMProvider({ children }) {
   const [leads, setLeads] = useState([]);
   const [patients, setPatients] = useState([]);
@@ -155,7 +164,7 @@ export function CRMProvider({ children }) {
         setLeads((data.leads || []).map(mapLead));
         setPatients((data.patients || []).map(mapPatient));
         setAppointments((data.appointments || []).map(mapAppointment));
-        setTemplates(data.templates || []);
+        setTemplates((data.templates || []).map(mapTemplate));
         emit('change', { type: 'crm_bootstrap', action: 'load' });
       }
     } catch (err) {
@@ -423,17 +432,58 @@ export function CRMProvider({ children }) {
   // Template Actions
   const saveTemplate = async (tmplId, updatedFields) => {
     try {
+      const backendFields = { ...updatedFields };
+      if (backendFields.content !== undefined) {
+        backendFields.body = backendFields.content;
+        delete backendFields.content;
+      }
+      if (backendFields.channel !== undefined) {
+        if (backendFields.channel === 'whatsapp') backendFields.channel = 'WhatsApp';
+        if (backendFields.channel === 'sms') backendFields.channel = 'SMS';
+        if (backendFields.channel === 'email') backendFields.channel = 'Email';
+      }
+
       const res = await fetchWrapper(`/templates/${tmplId}`, {
         method: 'PUT',
-        body: JSON.stringify(updatedFields)
+        body: JSON.stringify(backendFields)
       });
       const data = await res.json();
       if (data.success) {
-        setTemplates(prev => prev.map(t => t.id === tmplId || t._id === tmplId ? data.template : t));
-        emit('change', { type: 'templates', action: 'update', template: data.template });
+        const normalized = mapTemplate(data.template);
+        setTemplates(prev => prev.map(t => t.id === tmplId || t._id === tmplId ? normalized : t));
+        emit('change', { type: 'templates', action: 'update', template: normalized });
       }
     } catch (err) {
       console.error('Error saving template:', err);
+    }
+  };
+
+  const addTemplate = async (tmplData) => {
+    try {
+      const backendFields = {
+        name: tmplData.name || 'New Template',
+        body: tmplData.content || 'Hi {{PatientName}}...',
+        channel: tmplData.channel || 'WhatsApp'
+      };
+
+      if (backendFields.channel === 'whatsapp') backendFields.channel = 'WhatsApp';
+      if (backendFields.channel === 'sms') backendFields.channel = 'SMS';
+      if (backendFields.channel === 'email') backendFields.channel = 'Email';
+
+      const res = await fetchWrapper('/templates', {
+        method: 'POST',
+        body: JSON.stringify(backendFields)
+      });
+      const data = await res.json();
+      if (data.success) {
+        const normalized = mapTemplate(data.template);
+        setTemplates(prev => [...prev, normalized]);
+        emit('change', { type: 'templates', action: 'create', template: normalized });
+        return normalized;
+      }
+    } catch (err) {
+      console.error('Error creating template:', err);
+      return null;
     }
   };
 
@@ -465,7 +515,8 @@ export function CRMProvider({ children }) {
       addPatientVisit,
       updatePatientFields,
       addPatientDocument,
-      saveTemplate
+      saveTemplate,
+      addTemplate
     }}>
       {children}
     </CRMContext.Provider>
