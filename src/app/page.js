@@ -28,6 +28,30 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [userInteractedWithStep]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+        }
+      });
+    }, {
+      threshold: 0.08,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    const targets = document.querySelectorAll(
+      '.reveal, .reveal-fade, .reveal-left, .reveal-right, .reveal-scale'
+    );
+    targets.forEach((target) => observer.observe(target));
+
+    return () => {
+      targets.forEach((target) => observer.unobserve(target));
+    };
+  }, [activeView]);
+
   // Quick booking strip state
   const [quickData, setQuickData] = useState({
     name: '',
@@ -255,7 +279,7 @@ export default function Home() {
       <Treatments onSelectTreatment={handleSelectTreatment} />
 
       {/* Why Choose Us & Process Timeline */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white reveal">
         <div className="container mx-auto px-4" style={{ maxWidth: '1200px' }}>
           
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
@@ -578,7 +602,7 @@ export default function Home() {
       </section>
 
       {/* Doctor Bio Block */}
-      <section id="about" className="section-padding" style={{ backgroundColor: '#FAF9F6' }}>
+      <section id="about" className="section-padding reveal-left" style={{ backgroundColor: '#FAF9F6' }}>
         <div className="container mx-auto px-4" style={{ maxWidth: '1200px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '80px', alignItems: 'center' }}>
           
           {/* Picture Frame Image Styling */}
@@ -673,10 +697,14 @@ export default function Home() {
       </section>
 
       {/* Before After Rejuvenation Slider */}
-      <BeforeAfter />
+      <div className="reveal">
+        <BeforeAfter />
+      </div>
 
       {/* Reviews Carousel */}
-      <Testimonials />
+      <div className="reveal">
+        <Testimonials />
+      </div>
 
       {/* Floating Booking Action Button (FAB) */}
       <div 
@@ -733,7 +761,7 @@ export default function Home() {
       )}
 
       {/* Full-width CTA Band */}
-      <section className="section-padding">
+      <section className="section-padding reveal-scale">
         <div className="container mx-auto px-4" style={{ maxWidth: '1200px' }}>
           <div className="cta-band" style={{ padding: '60px 24px', backgroundColor: 'var(--bg-dark)', borderRadius: '16px', textAlign: 'center', color: '#ffffff' }}>
             <h2 className="cta-band-title" style={{ fontSize: '32px', fontWeight: '700', marginBottom: '16px', color: '#ffffff' }}>Ready for Clearer, Healthier Skin?</h2>
