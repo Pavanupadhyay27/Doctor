@@ -25,9 +25,10 @@ export default function Patients() {
   const activePatient = patients.find(p => p.id === activePatientId);
 
   const filteredPatients = patients.filter(pat => {
-    return pat.name.toLowerCase().includes(search.toLowerCase()) ||
-           pat.email.toLowerCase().includes(search.toLowerCase()) ||
-           pat.phone.includes(search);
+    const nameMatch = pat.name ? pat.name.toLowerCase().includes(search.toLowerCase()) : false;
+    const emailMatch = pat.email ? pat.email.toLowerCase().includes(search.toLowerCase()) : false;
+    const phoneMatch = pat.phone ? pat.phone.includes(search) : false;
+    return nameMatch || emailMatch || phoneMatch;
   });
 
   const handleRowClick = (patId) => {
@@ -94,7 +95,8 @@ export default function Patients() {
               </tr>
             ) : (
               filteredPatients.map(pat => {
-                const lastVisit = pat.visitHistory[0] ? pat.visitHistory[0].date : 'None';
+                const lastVisitObj = pat.visitHistory && pat.visitHistory[0];
+                const lastVisit = lastVisitObj ? lastVisitObj.date : 'None';
                 return (
                   <tr key={pat.id} onClick={() => handleRowClick(pat.id)} className="hover:bg-teal-50/20 cursor-pointer">
                     <td style={{ fontWeight: 600 }}>{pat.name}</td>
@@ -205,10 +207,10 @@ export default function Patients() {
 
                   {/* Visit Log listing */}
                   <h4 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '12px' }}>Past visits log</h4>
-                  {activePatient.visitHistory.length === 0 ? (
+                  {(!activePatient.visitHistory || activePatient.visitHistory.length === 0) ? (
                     <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center' }}>No visits logged.</p>
                   ) : (
-                    activePatient.visitHistory.map((visit, idx) => (
+                    (activePatient.visitHistory || []).map((visit, idx) => (
                       <div key={idx} style={{ padding: '12px', backgroundColor: 'var(--bg-warm)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', marginBottom: '10px', fontSize: '13px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, marginBottom: '4px', fontSize: '11px', color: 'var(--text-muted)' }}>
                           <span>{visit.date} · {visit.type}</span>
@@ -233,7 +235,7 @@ export default function Patients() {
                   {(!activePatient.documents || activePatient.documents.length === 0) ? (
                     <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', padding: '12px 0' }}>No documents uploaded.</p>
                   ) : (
-                    activePatient.documents.map((doc, idx) => (
+                    (activePatient.documents || []).map((doc, idx) => (
                       <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', marginBottom: '8px', fontSize: '13px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <i className="far fa-file-pdf" style={{ color: 'var(--danger)', fontSize: '18px' }}></i>

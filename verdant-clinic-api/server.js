@@ -88,22 +88,33 @@ app.get('/api/crm', protect, async (req, res, next) => {
     const supabase = require('./config/supabase');
     
     // Fetch all records in parallel
-    const [leadsRes, patientsRes, appointmentsRes, templatesRes] = await Promise.all([
+    const [leadsRes, patientsRes, appointmentsRes, templatesRes, visitsRes, docsRes] = await Promise.all([
       supabase.from('leads').select('*').order('created_at', { ascending: false }),
       supabase.from('patients').select('*').order('created_at', { ascending: false }),
       supabase.from('appointments').select('*').order('date', { ascending: true }).order('time', { ascending: true }),
       supabase.from('templates').select('*'),
+      supabase.from('patient_visits').select('*').order('created_at', { ascending: false }),
+      supabase.from('patient_documents').select('*').order('created_at', { ascending: false }),
     ]);
 
     if (leadsRes.error) throw leadsRes.error;
     if (patientsRes.error) throw patientsRes.error;
     if (appointmentsRes.error) throw appointmentsRes.error;
     if (templatesRes.error) throw templatesRes.error;
+    if (visitsRes.error) throw visitsRes.error;
+    if (docsRes.error) throw docsRes.error;
+
+    // Nest visits and documents inside patients
+    const nestedPatients = (patientsRes.data || []).map(pat => ({
+      ...pat,
+      visitHistory: (visitsRes.data || []).filter(v => v.patient_id === pat.id),
+      documents: (docsRes.data || []).filter(d => d.patient_id === pat.id)
+    }));
 
     res.status(200).json({
       success: true,
       leads: leadsRes.data || [],
-      patients: patientsRes.data || [],
+      patients: nestedPatients,
       appointments: appointmentsRes.data || [],
       templates: templatesRes.data || [],
     });
