@@ -42,6 +42,32 @@ const MOCK_TREATMENTS = [
   { id: 'acne', name: 'Advanced Acne Therapy', duration: '60 mins', price: '$99 - $180', recovery: 'None' }
 ];
 
+// Data normalizers for Supabase column mapping compatibility
+const mapLead = (lead) => {
+  if (!lead) return lead;
+  return {
+    ...lead,
+    treatment: lead.treatment || lead.treatment_name || 'General Consultation',
+    date: lead.date || (lead.created_at ? lead.created_at.split('T')[0] : '')
+  };
+};
+
+const mapPatient = (patient) => {
+  if (!patient) return patient;
+  return {
+    ...patient,
+    treatmentPlan: patient.treatmentPlan || patient.plan || 'Consulted. Plan pending.'
+  };
+};
+
+const mapAppointment = (appointment) => {
+  if (!appointment) return appointment;
+  return {
+    ...appointment,
+    treatment: appointment.treatment || appointment.treatment_name || 'Skin Treatment'
+  };
+};
+
 export function CRMProvider({ children }) {
   const [leads, setLeads] = useState([]);
   const [patients, setPatients] = useState([]);
@@ -88,7 +114,6 @@ export function CRMProvider({ children }) {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('aura_crm_token');
           localStorage.removeItem('aura_crm_user');
-          // Support client-side hash or path redirects to auth login page
           if (window.location.hash) {
             window.location.hash = '/admin/login';
           } else {
@@ -105,7 +130,7 @@ export function CRMProvider({ children }) {
     }
   };
 
-  // Helper to load master CRM state from MongoDB
+  // Helper to load master CRM state
   const loadData = async (tokenVal) => {
     try {
       const token = tokenVal || localStorage.getItem('aura_crm_token');
@@ -125,9 +150,9 @@ export function CRMProvider({ children }) {
 
       const data = await res.json();
       if (data.success) {
-        setLeads(data.leads || []);
-        setPatients(data.patients || []);
-        setAppointments(data.appointments || []);
+        setLeads((data.leads || []).map(mapLead));
+        setPatients((data.patients || []).map(mapPatient));
+        setAppointments((data.appointments || []).map(mapAppointment));
         setTemplates(data.templates || []);
         emit('change', { type: 'crm_bootstrap', action: 'load' });
       }
@@ -169,7 +194,6 @@ export function CRMProvider({ children }) {
         localStorage.setItem('aura_crm_token', data.token);
         localStorage.setItem('aura_crm_user', JSON.stringify(data.user));
         
-        // Bootstrap dataset upon logging in
         setLoading(true);
         await loadData(data.token);
         emit('change', { type: 'auth', action: 'login', user: data.user });
@@ -211,10 +235,10 @@ export function CRMProvider({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        // Update local state and emit event
-        setLeads(prev => [data.lead, ...prev]);
-        emit('change', { type: 'leads', action: 'create', lead: data.lead });
-        return data.lead;
+        const normalizedLead = mapLead(data.lead);
+        setLeads(prev => [normalizedLead, ...prev]);
+        emit('change', { type: 'leads', action: 'create', lead: normalizedLead });
+        return normalizedLead;
       }
     } catch (err) {
       console.error('Error adding lead:', err);
@@ -229,16 +253,19 @@ export function CRMProvider({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        setLeads(prev => prev.map(l => l.id === leadId || l._id === leadId ? data.lead : l));
+        const normalizedLead = mapLead(data.lead);
+        setLeads(prev => prev.map(l => l.id === leadId || l._id === leadId ? normalizedLead : l));
         
-        // Update patient list in case conversion occurred
         if (data.patient) {
+          const normalizedPatient = mapPatient(data.patient);
           setPatients(prev => {
-            const exists = prev.some(p => p._id === data.patient._id);
-            return exists ? prev.map(p => p._id === data.patient._id ? data.patient : p) : [data.patient, ...prev];
+            const exists = prev.some(p => p.id === normalizedPatient.id || p._id === normalizedPatient.id);
+            return exists 
+              ? prev.map(p => p.id === normalizedPatient.id || p._id === normalizedPatient.id ? normalizedPatient : p) 
+              : [normalizedPatient, ...prev];
           });
         }
-        emit('change', { type: 'leads', action: 'update_status', lead: data.lead });
+        emit('change', { type: 'leads', action: 'update_status', lead: normalizedLead });
       }
     } catch (err) {
       console.error('Error updating status:', err);
@@ -253,8 +280,9 @@ export function CRMProvider({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        setLeads(prev => prev.map(l => l.id === leadId || l._id === leadId ? data.lead : l));
-        emit('change', { type: 'leads', action: 'add_note', lead: data.lead });
+        const normalizedLead = mapLead(data.lead);
+        setLeads(prev => prev.map(l => l.id === leadId || l._id === leadId ? normalizedLead : l));
+        emit('change', { type: 'leads', action: 'add_note', lead: normalizedLead });
       }
     } catch (err) {
       console.error('Error adding lead note:', err);
@@ -269,8 +297,9 @@ export function CRMProvider({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        setLeads(prev => prev.map(l => l.id === leadId || l._id === leadId ? data.lead : l));
-        emit('change', { type: 'leads', action: 'save_notes_content', lead: data.lead });
+        const normalizedLead = mapLead(data.lead);
+        setLeads(prev => prev.map(l => l.id === leadId || l._id === leadId ? normalizedLead : l));
+        emit('change', { type: 'leads', action: 'save_notes_content', lead: normalizedLead });
       }
     } catch (err) {
       console.error('Error saving lead notes content:', err);
@@ -286,8 +315,9 @@ export function CRMProvider({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        setPatients(prev => prev.map(p => p.id === patientId || p._id === patientId ? data.patient : p));
-        emit('change', { type: 'patients', action: 'add_visit', patient: data.patient });
+        const normalizedPatient = mapPatient(data.patient);
+        setPatients(prev => prev.map(p => p.id === patientId || p._id === patientId ? normalizedPatient : p));
+        emit('change', { type: 'patients', action: 'add_visit', patient: normalizedPatient });
       }
     } catch (err) {
       console.error('Error adding patient visit:', err);
@@ -302,8 +332,9 @@ export function CRMProvider({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        setPatients(prev => prev.map(p => p.id === patientId || p._id === patientId ? data.patient : p));
-        emit('change', { type: 'patients', action: 'update_fields', patient: data.patient });
+        const normalizedPatient = mapPatient(data.patient);
+        setPatients(prev => prev.map(p => p.id === patientId || p._id === patientId ? normalizedPatient : p));
+        emit('change', { type: 'patients', action: 'update_fields', patient: normalizedPatient });
       }
     } catch (err) {
       console.error('Error updating patient fields:', err);
@@ -318,8 +349,9 @@ export function CRMProvider({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        setPatients(prev => prev.map(p => p.id === patientId || p._id === patientId ? data.patient : p));
-        emit('change', { type: 'patients', action: 'add_document', patient: data.patient });
+        const normalizedPatient = mapPatient(data.patient);
+        setPatients(prev => prev.map(p => p.id === patientId || p._id === patientId ? normalizedPatient : p));
+        emit('change', { type: 'patients', action: 'add_document', patient: normalizedPatient });
       }
     } catch (err) {
       console.error('Error uploading patient doc:', err);
@@ -335,9 +367,10 @@ export function CRMProvider({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        setAppointments(prev => [...prev, data.appointment]);
-        emit('change', { type: 'appointments', action: 'create', appointment: data.appointment });
-        return data.appointment;
+        const normalizedApt = mapAppointment(data.appointment);
+        setAppointments(prev => [...prev, normalizedApt]);
+        emit('change', { type: 'appointments', action: 'create', appointment: normalizedApt });
+        return normalizedApt;
       }
     } catch (err) {
       console.error('Error scheduling appointment:', err);
@@ -352,11 +385,11 @@ export function CRMProvider({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        setAppointments(prev => prev.map(a => a.id === aptId || a._id === aptId ? data.appointment : a));
+        const normalizedApt = mapAppointment(data.appointment);
+        setAppointments(prev => prev.map(a => a.id === aptId || a._id === aptId ? normalizedApt : a));
         
-        // Reload leads to catch the calendar log entry in the timeline
         await loadData();
-        emit('change', { type: 'appointments', action: 'reschedule', appointment: data.appointment });
+        emit('change', { type: 'appointments', action: 'reschedule', appointment: normalizedApt });
       }
     } catch (err) {
       console.error('Error rescheduling appointment:', err);

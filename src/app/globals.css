@@ -1345,32 +1345,48 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 18px;
-  border-radius: 14px;
-  font-size: 14.5px;
+  padding: 13px 18px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 650;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.4) !important; /* Muted gray for clean contrast */
-  transition: all 0.25s ease;
+  color: rgba(255, 255, 255, 0.4) !important;
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .admin-nav-item i {
   width: 20px;
   text-align: center;
   font-size: 15px;
+  transition: transform 0.2s ease;
 }
 
 .admin-nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: rgba(255, 255, 255, 0.03);
   color: #ffffff !important;
-  transform: translateX(2px);
+  transform: translateY(-1px);
 }
 
 .admin-nav-item.active {
-  background-color: transparent !important; /* Completely transparent button background */
+  background-color: var(--primary) !important;
   color: #ffffff !important;
-  border-left: none !important; /* No green left border */
-  font-weight: 800; /* Standardized bold weight */
+  font-weight: 750;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 4px solid var(--primary-dark) !important; /* 3D Bevel effect */
+  box-shadow: 0 6px 16px rgba(15, 107, 92, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+.admin-nav-item.active i {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+}
+
+.admin-nav-item:active {
+  transform: translateY(1px) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 0 2px 4px rgba(15, 107, 92, 0.15) !important;
 }
 
 .admin-sidebar-footer {
