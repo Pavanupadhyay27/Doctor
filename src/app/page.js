@@ -32,27 +32,39 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('reveal-visible');
-        }
-      });
-    }, {
-      threshold: 0.08,
-      rootMargin: '0px 0px -40px 0px'
-    });
+    // Skip observer setup while treatment detail page is active (public page is not rendered)
+    if (activeTreatmentPageId) return;
 
-    const targets = document.querySelectorAll(
-      '.reveal, .reveal-fade, .reveal-left, .reveal-right, .reveal-scale'
-    );
-    targets.forEach((target) => observer.observe(target));
+    // Small delay to ensure DOM elements are mounted after conditional render
+    const timerId = setTimeout(() => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal-visible');
+          }
+        });
+      }, {
+        threshold: 0.08,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      const targets = document.querySelectorAll(
+        '.reveal, .reveal-fade, .reveal-left, .reveal-right, .reveal-scale'
+      );
+      targets.forEach((target) => observer.observe(target));
+
+      // Store cleanup reference
+      timerId._observer = observer;
+      timerId._targets = targets;
+    }, 50);
 
     return () => {
-      targets.forEach((target) => observer.unobserve(target));
+      clearTimeout(timerId);
+      if (timerId._observer && timerId._targets) {
+        timerId._targets.forEach((target) => timerId._observer.unobserve(target));
+      }
     };
-  }, [activeView]);
+  }, [activeView, activeTreatmentPageId]);
 
   // Prevent background page scrolling when booking modal is open
   useEffect(() => {
