@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCRM } from '@/context/CRMState';
 
 export default function Patients({ globalSearch, setGlobalSearch }) {
@@ -24,6 +24,13 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
   const [visitType, setVisitType] = useState('Procedure');
   const [visitNotes, setVisitNotes] = useState('');
 
+  // Local chart editing state
+  const [historyNotes, setHistoryNotes] = useState('');
+  const [treatmentPlan, setTreatmentPlan] = useState('');
+
+  // Document preview lightbox state
+  const [previewDoc, setPreviewDoc] = useState(null);
+
   // Toast Notification state
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
@@ -35,6 +42,17 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
   };
 
   const activePatient = patients.find(p => p.id === activePatientId);
+
+  // Sync database chart values to local text states upon switching patients
+  useEffect(() => {
+    if (activePatient) {
+      setHistoryNotes(activePatient.historyNotes || '');
+      setTreatmentPlan(activePatient.treatmentPlan || '');
+    } else {
+      setHistoryNotes('');
+      setTreatmentPlan('');
+    }
+  }, [activePatientId, activePatient?.historyNotes, activePatient?.treatmentPlan]);
 
   const filteredPatients = patients.filter(pat => {
     const nameMatch = pat.name ? pat.name.toLowerCase().includes(search.toLowerCase()) : false;
@@ -85,6 +103,24 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     const downloadUrl = `${baseUrl}/patients/${patientId}/documents/${encodeURIComponent(docName)}/download?token=${token}`;
     window.open(downloadUrl, '_blank');
+  };
+
+  const handlePreviewDocument = (patientId, docName) => {
+    const token = localStorage.getItem('aura_crm_token');
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const downloadUrl = `${baseUrl}/patients/${patientId}/documents/${encodeURIComponent(docName)}/download?token=${token}`;
+    
+    const ext = docName.split('.').pop().toLowerCase();
+    const isImage = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(ext);
+    const isPdf = ext === 'pdf';
+
+    if (isImage || isPdf) {
+      setPreviewDoc({ name: docName, url: downloadUrl, isImage, isPdf });
+      showNotification('Opening file preview...', 'success');
+    } else {
+      window.open(downloadUrl, '_blank');
+      showNotification('Downloading file...', 'success');
+    }
   };
 
   const getDocIconAndColor = (docName) => {
@@ -378,8 +414,14 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
                       className="form-textarea" 
                       rows="3"
                       style={{ borderRadius: '8px', border: '1px solid var(--border)', padding: '10px 12px', fontSize: '13px', outline: 'none' }}
-                      value={activePatient.historyNotes || ''}
-                      onChange={(e) => updatePatientFields(activePatient.id, { historyNotes: e.target.value })}
+                      value={historyNotes}
+                      onChange={(e) => setHistoryNotes(e.target.value)}
+                      onBlur={() => {
+                        if (activePatient.historyNotes !== historyNotes) {
+                          updatePatientFields(activePatient.id, { historyNotes });
+                          showNotification('Medical history auto-saved.', 'success');
+                        }
+                      }}
                     ></textarea>
                   </div>
 
@@ -392,8 +434,14 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
                       className="form-textarea" 
                       rows="4"
                       style={{ borderRadius: '8px', border: '1px solid var(--border)', padding: '10px 12px', fontSize: '13px', outline: 'none' }}
-                      value={activePatient.treatmentPlan || ''}
-                      onChange={(e) => updatePatientFields(activePatient.id, { treatmentPlan: e.target.value })}
+                      value={treatmentPlan}
+                      onChange={(e) => setTreatmentPlan(e.target.value)}
+                      onBlur={() => {
+                        if (activePatient.treatmentPlan !== treatmentPlan) {
+                          updatePatientFields(activePatient.id, { treatmentPlan });
+                          showNotification('Treatment plan auto-saved.', 'success');
+                        }
+                      }}
                     ></textarea>
                   </div>
                 </div>
@@ -543,7 +591,11 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
                               fontSize: '13.5px' 
                             }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
+                            <div 
+                              onClick={() => handlePreviewDocument(activePatient.id, doc.name)}
+                              style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1, cursor: 'pointer' }}
+                              title="Click to preview file inline"
+                            >
                               <div style={{
                                 width: '36px',
                                 height: '36px',
@@ -557,7 +609,7 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
                                 <i className={fileStyle.icon} style={{ color: fileStyle.color, fontSize: '16px' }}></i>
                               </div>
                               <div style={{ minWidth: 0, flex: 1 }}>
-                                <div style={{ fontWeight: '750', color: 'var(--text-dark)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} title={doc.name}>
+                                <div style={{ fontWeight: '750', color: 'var(--text-dark)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                                   {doc.name}
                                 </div>
                                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '500' }}>
@@ -566,21 +618,41 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
                               </div>
                             </div>
                             
-                            <button 
-                              className="btn btn-secondary btn-sm" 
-                              style={{ 
-                                padding: '8px', 
-                                borderRadius: '8px', 
-                                border: '1px solid var(--border)', 
-                                backgroundColor: '#ffffff',
-                                cursor: 'pointer',
-                                marginLeft: '12px'
-                              }} 
-                              onClick={() => handleDownloadDocument(activePatient.id, doc.name)}
-                              title="Download file"
-                            >
-                              <i className="fas fa-download" style={{ fontSize: '12px', color: 'var(--text-dark)' }}></i>
-                            </button>
+                            <div style={{ display: 'flex', gap: '6px', marginLeft: '12px' }}>
+                              <button 
+                                className="btn btn-secondary btn-sm" 
+                                style={{ 
+                                  padding: '8px 12px', 
+                                  borderRadius: '8px', 
+                                  border: '1px solid var(--border)', 
+                                  backgroundColor: '#ffffff',
+                                  cursor: 'pointer',
+                                  fontSize: '12px',
+                                  fontWeight: '600',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '4px'
+                                }} 
+                                onClick={() => handlePreviewDocument(activePatient.id, doc.name)}
+                                title="Preview file"
+                              >
+                                <i className="far fa-eye" style={{ fontSize: '12px' }}></i> View
+                              </button>
+                              <button 
+                                className="btn btn-secondary btn-sm" 
+                                style={{ 
+                                  padding: '8px', 
+                                  borderRadius: '8px', 
+                                  border: '1px solid var(--border)', 
+                                  backgroundColor: '#ffffff',
+                                  cursor: 'pointer'
+                                }} 
+                                onClick={() => handleDownloadDocument(activePatient.id, doc.name)}
+                                title="Download file"
+                              >
+                                <i className="fas fa-download" style={{ fontSize: '12px', color: 'var(--text-dark)' }}></i>
+                              </button>
+                            </div>
                           </div>
                         );
                       })}
@@ -643,6 +715,84 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
           </div>
         </div>
       </div>
+
+      {/* Lightbox / Document Preview Modal */}
+      {previewDoc && (
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(10, 22, 20, 0.75)',
+            backdropFilter: 'blur(10px)',
+            zIndex: 110000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px'
+          }}
+          onClick={() => setPreviewDoc(null)}
+        >
+          <div 
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '24px',
+              border: '1px solid rgba(18, 33, 30, 0.08)',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.2)',
+              width: '90%',
+              maxWidth: '900px',
+              height: '85%',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              animation: 'modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Interactive File Preview</span>
+                <h4 style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-dark)', margin: '2px 0 0 0' }}>{previewDoc.name}</h4>
+              </div>
+              <button 
+                onClick={() => setPreviewDoc(null)}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  border: '1px solid var(--border)',
+                  backgroundColor: '#ffffff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--text-muted)'
+                }}
+              >
+                <i className="fas fa-times" style={{ fontSize: '12px' }}></i>
+              </button>
+            </div>
+            <div style={{ flexGrow: 1, backgroundColor: '#FAF9F6', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '16px' }}>
+              {previewDoc.isImage ? (
+                <img 
+                  src={previewDoc.url} 
+                  alt={previewDoc.name} 
+                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.06)' }} 
+                />
+              ) : previewDoc.isPdf ? (
+                <iframe 
+                  src={previewDoc.url} 
+                  title={previewDoc.name} 
+                  style={{ width: '100%', height: '100%', border: 'none', borderRadius: '12px' }} 
+                />
+              ) : (
+                <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                  Preview not available for this file type.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
