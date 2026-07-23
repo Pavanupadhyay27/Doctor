@@ -157,6 +157,32 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
     );
   };
 
+  // Shared detail items styles for drawer layout
+  const infoItemStyle = {
+    backgroundColor: '#ffffff',
+    borderRadius: '12px',
+    padding: '14px 18px',
+    border: '1px solid rgba(15, 107, 92, 0.06)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.01)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px'
+  };
+  
+  const infoLabelStyle = {
+    fontSize: '10.5px',
+    fontWeight: '800',
+    color: 'var(--text-muted)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
+  };
+
+  const infoValStyle = {
+    fontSize: '14px',
+    fontWeight: '700',
+    color: 'var(--text-dark)'
+  };
+
   const totalLeadsCount = filteredLeads.length;
   const newLeadsCount = leads.filter(l => l.status && l.status.toLowerCase() === 'new').length;
   const bookedLeadsCount = leads.filter(l => l.status && l.status.toLowerCase() === 'booked').length;
@@ -304,13 +330,47 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
 
       {/* Slide-in Detail Drawer */}
       {activeLead && (
-        <div className="drawer-backdrop active" onClick={() => setActiveLeadId(null)}>
-          <div className="drawer-content" onClick={(e) => e.stopPropagation()}>
-            <div className="drawer-header" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '18px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div 
+          onClick={() => setActiveLeadId(null)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(18, 33, 30, 0.4)',
+            backdropFilter: 'blur(5px)',
+            zIndex: 1000,
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '500px',
+              maxWidth: '90vw',
+              height: '100vh',
+              backgroundColor: '#F4F6F7',
+              boxShadow: '-10px 0 35px rgba(0, 0, 0, 0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              zIndex: 1001,
+            }}
+          >
+            {/* Header */}
+            <div style={{ 
+              padding: '20px 24px', 
+              borderBottom: '1px solid var(--border)', 
+              backgroundColor: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{
-                  width: '46px',
-                  height: '46px',
+                  width: '42px',
+                  height: '42px',
                   borderRadius: '50%',
                   backgroundColor: 'rgba(15, 107, 92, 0.08)',
                   color: 'var(--primary)',
@@ -318,64 +378,118 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontWeight: '800',
-                  fontSize: '15px',
-                  fontFamily: 'var(--font-heading)'
+                  fontSize: '14px',
                 }}>
                   {getInitials(activeLead.name)}
                 </div>
                 <div>
                   <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Lead Chart Detail</span>
-                  <h3 className="drawer-title" style={{ fontSize: '19px', fontWeight: '850', color: 'var(--text-dark)', fontFamily: 'var(--font-heading)', margin: 0 }}>{activeLead.name}</h3>
+                  <h3 style={{ fontSize: '18px', fontWeight: '850', color: 'var(--text-dark)', margin: 0 }}>{activeLead.name}</h3>
                 </div>
               </div>
-              <button onClick={() => setActiveLeadId(null)} className="btn-icon rounded-full"><i className="fas fa-times"></i></button>
+              <button 
+                onClick={() => setActiveLeadId(null)} 
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(0,0,0,0.03)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--text-dark)'
+                }}
+              >
+                <i className="fas fa-times"></i>
+              </button>
             </div>
 
             {/* Tabs */}
-            <div className="drawer-tabs">
-              <div className={`drawer-tab ${drawerTab === 'details' ? 'active' : ''}`} onClick={() => setDrawerTab('details')}>Overview</div>
-              <div className={`drawer-tab ${drawerTab === 'timeline' ? 'active' : ''}`} onClick={() => setDrawerTab('timeline')}>History & Notes</div>
-              <div className={`drawer-tab ${drawerTab === 'message' ? 'active' : ''}`} onClick={() => setDrawerTab('message')}>Quick Response</div>
+            <div style={{
+              display: 'flex',
+              backgroundColor: '#ffffff',
+              borderBottom: '1px solid var(--border)',
+              padding: '0 16px'
+            }}>
+              <div 
+                className={`drawer-tab ${drawerTab === 'details' ? 'active' : ''}`} 
+                onClick={() => setDrawerTab('details')}
+                style={{ padding: '14px 20px', cursor: 'pointer', fontSize: '13.5px', fontWeight: '700', borderBottom: drawerTab === 'details' ? '2px solid var(--primary)' : '2px solid transparent', color: drawerTab === 'details' ? 'var(--primary)' : 'var(--text-muted)' }}
+              >
+                Overview
+              </div>
+              <div 
+                className={`drawer-tab ${drawerTab === 'timeline' ? 'active' : ''}`} 
+                onClick={() => setDrawerTab('timeline')}
+                style={{ padding: '14px 20px', cursor: 'pointer', fontSize: '13.5px', fontWeight: '700', borderBottom: drawerTab === 'timeline' ? '2px solid var(--primary)' : '2px solid transparent', color: drawerTab === 'timeline' ? 'var(--primary)' : 'var(--text-muted)' }}
+              >
+                History & Notes
+              </div>
+              <div 
+                className={`drawer-tab ${drawerTab === 'message' ? 'active' : ''}`} 
+                onClick={() => setDrawerTab('message')}
+                style={{ padding: '14px 20px', cursor: 'pointer', fontSize: '13.5px', fontWeight: '700', borderBottom: drawerTab === 'message' ? '2px solid var(--primary)' : '2px solid transparent', color: drawerTab === 'message' ? 'var(--primary)' : 'var(--text-muted)' }}
+              >
+                Quick Response
+              </div>
             </div>
 
             {/* Body */}
-            <div className="drawer-body">
+            <div style={{
+              padding: '24px',
+              overflowY: 'auto',
+              flexGrow: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px'
+            }}>
               {drawerTab === 'details' && (
-                <div>
-                  <div className="info-grid">
-                    <div className="info-item">
-                      <span className="info-label">Full Name</span>
-                      <span className="info-val">{activeLead.name}</span>
-                    </div>
-                    <div className="info-item">
-                      <span className="info-label">Phone</span>
-                      <span className="info-val">{activeLead.phone}</span>
-                    </div>
-                    <div className="info-item">
-                      <span className="info-label">Email</span>
-                      <span className="info-val">{activeLead.email || 'N/A'}</span>
-                    </div>
-                    <div className="info-item">
-                      <span className="info-label">Source</span>
-                      <span className="info-val">{activeLead.source}</span>
-                    </div>
-                    <div className="info-item">
-                      <span className="info-label">Interested in</span>
-                      <span className="info-val" style={{ color: 'var(--primary)', fontWeight: 650 }}>{activeLead.treatment}</span>
-                    </div>
-                    <div className="info-item">
-                      <span className="info-label">Date Captured</span>
-                      <span className="info-val">
-                        {activeLead.created_at ? new Date(activeLead.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}
-                      </span>
-                    </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>Full Name</span>
+                    <span style={infoValStyle}>{activeLead.name}</span>
+                  </div>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>Phone</span>
+                    <span style={infoValStyle}>{activeLead.phone}</span>
+                  </div>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>Email</span>
+                    <span style={infoValStyle}>{activeLead.email || 'N/A'}</span>
+                  </div>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>Source</span>
+                    <span style={infoValStyle}>{activeLead.source}</span>
+                  </div>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>Interested in</span>
+                    <span style={{ ...infoValStyle, color: 'var(--primary)' }}>{activeLead.treatment}</span>
+                  </div>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>Date Captured</span>
+                    <span style={infoValStyle}>
+                      {activeLead.created_at ? new Date(activeLead.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}
+                    </span>
                   </div>
 
-                  <div className="form-group" style={{ marginTop: '20px' }}>
-                    <label className="form-label" htmlFor="drawer-status-select">Pipeline Workflow Status</label>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>Pipeline Workflow Status</span>
                     <select 
                       id="drawer-status-select" 
-                      className="form-select"
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        backgroundColor: '#ffffff',
+                        fontSize: '13.5px',
+                        fontWeight: '700',
+                        color: 'var(--text-dark)',
+                        marginTop: '6px',
+                        outline: 'none'
+                      }}
                       value={activeLead.status ? activeLead.status.toLowerCase() : ''}
                       onChange={(e) => updateLeadStatus(activeLead.id, e.target.value)}
                     >
@@ -387,14 +501,27 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
                     </select>
                   </div>
 
-                  <div className="form-group" style={{ marginTop: '20px' }}>
-                    <label className="form-label">General Notes / Requirements</label>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>General Notes / Requirements</span>
                     <textarea 
-                      className="form-textarea" 
-                      rows="5"
+                      rows="4"
                       value={activeLead.notes || ''}
                       onChange={(e) => saveLeadNotesContent(activeLead.id, e.target.value)}
-                    ></textarea>
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        backgroundColor: '#ffffff',
+                        fontSize: '13.5px',
+                        marginTop: '6px',
+                        color: 'var(--text-dark)',
+                        resize: 'vertical',
+                        outline: 'none',
+                        lineHeight: '1.5'
+                      }}
+                      placeholder="Type patient case notes here..."
+                    />
                   </div>
 
                   {/* Red Delete Lead Record Button */}
@@ -402,7 +529,7 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
                     onClick={handleDeleteLead}
                     className="btn btn-secondary btn-full"
                     style={{
-                      marginTop: '28px',
+                      marginTop: '20px',
                       backgroundColor: 'rgba(232, 93, 75, 0.08)',
                       color: '#E85D4B',
                       borderColor: 'rgba(232, 93, 75, 0.2)',
@@ -413,7 +540,8 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '8px',
-                      borderRadius: '10px'
+                      borderRadius: '10px',
+                      padding: '12px'
                     }}
                   >
                     <i className="far fa-trash-can"></i> Delete Lead Record
@@ -422,21 +550,53 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
               )}
 
               {drawerTab === 'timeline' && (
-                <div>
-                  <div className="form-group bg-[#FAF9F6] p-4 border border-gray-200 rounded-sm mb-6">
-                    <label className="form-label">Write a Clinical / Callback Note</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{
+                    backgroundColor: '#ffffff',
+                    padding: '20px',
+                    borderRadius: '12px',
+                    border: '1px solid var(--border)',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.01)',
+                  }}>
+                    <label style={infoLabelStyle}>Write a Clinical / Callback Note</label>
                     <textarea 
-                      className="form-textarea" 
-                      rows="2" 
+                      rows="3" 
                       placeholder="e.g. Patient called back, wants Tuesday..."
                       value={newNote}
                       onChange={(e) => setNewNote(e.target.value)}
-                    ></textarea>
-                    <button onClick={handleAddNote} className="btn btn-primary btn-sm mt-3 ml-auto block">Save Note</button>
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        fontSize: '13.5px',
+                        marginTop: '8px',
+                        color: 'var(--text-dark)',
+                        outline: 'none',
+                        resize: 'none'
+                      }}
+                    />
+                    <button 
+                      onClick={handleAddNote} 
+                      className="btn btn-primary"
+                      style={{
+                        marginTop: '12px',
+                        padding: '8px 16px',
+                        fontSize: '13px',
+                        borderRadius: '8px',
+                        marginLeft: 'auto',
+                        display: 'block'
+                      }}
+                    >
+                      Save Note
+                    </button>
                   </div>
 
-                  <h4 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '12px' }}>Interaction History</h4>
-                  <div className="timeline-logs">
+                  <h4 style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+                    Interaction History
+                  </h4>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {[...(activeLead.history || [])].reverse().map((hist, idx) => {
                       let typeLabel = 'System';
                       let iconClass = 'fas fa-cog';
@@ -452,12 +612,20 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
                       }
 
                       return (
-                        <div key={idx} className="log-item">
-                          <div className="log-header">
-                            <span><i className={iconClass}></i> <b>{typeLabel}</b></span>
-                            <span>{hist.date}</span>
+                        <div key={idx} style={{
+                          backgroundColor: '#ffffff',
+                          borderRadius: '12px',
+                          padding: '14px 18px',
+                          border: '1px solid rgba(15, 107, 92, 0.05)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.015)'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                            <span style={{ fontSize: '12px', fontWeight: '750', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <i className={iconClass}></i> {typeLabel}
+                            </span>
+                            <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>{hist.date}</span>
                           </div>
-                          <div className="log-content" style={{ whiteSpace: 'pre-wrap' }}>{hist.text}</div>
+                          <div style={{ fontSize: '13px', color: '#4A5568', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>{hist.text}</div>
                         </div>
                       );
                     })}
@@ -466,13 +634,24 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
               )}
 
               {drawerTab === 'message' && (
-                <div>
-                  <div className="form-group">
-                    <label className="form-label">Select Message Template</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>Select Message Template</span>
                     <select 
-                      className="form-select"
                       value={selectedTemplateId}
                       onChange={(e) => setSelectedTemplateId(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        backgroundColor: '#ffffff',
+                        fontSize: '13.5px',
+                        fontWeight: '700',
+                        color: 'var(--text-dark)',
+                        marginTop: '6px',
+                        outline: 'none'
+                      }}
                     >
                       <option value="">-- Choose Template --</option>
                       {templates.map(t => (
@@ -481,9 +660,21 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
                     </select>
                   </div>
                   
-                  <div className="form-group">
-                    <label className="form-label">Compiled Output Preview</label>
-                    <div style={{ backgroundColor: 'var(--bg-warm)', padding: '16px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: '12px', maxHeight: '220px', overflowY: 'auto', lineHeight: '1.5', color: '#333333', whiteSpace: 'pre-wrap' }}>
+                  <div style={infoItemStyle}>
+                    <span style={infoLabelStyle}>Compiled Output Preview</span>
+                    <div style={{ 
+                      backgroundColor: 'var(--bg-warm)', 
+                      padding: '14px 18px', 
+                      border: '1px solid var(--border)', 
+                      borderRadius: '8px', 
+                      fontSize: '12.5px', 
+                      maxHeight: '220px', 
+                      overflowY: 'auto', 
+                      lineHeight: '1.5', 
+                      color: '#2D3748', 
+                      whiteSpace: 'pre-wrap',
+                      marginTop: '6px'
+                    }}>
                       {selectedTemplateId ? getCompiledPreview() : 'Select a template above to generate a message preview.'}
                     </div>
                   </div>
@@ -492,6 +683,18 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
                     onClick={handleSendMockMessage} 
                     className="btn btn-accent btn-full"
                     disabled={!selectedTemplateId}
+                    style={{
+                      padding: '12px',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      marginTop: '8px',
+                      cursor: selectedTemplateId ? 'pointer' : 'not-allowed'
+                    }}
                   >
                     <i className="fas fa-paper-plane"></i> Send via {selectedTemplateId ? templates.find(t => t.id === selectedTemplateId)?.channel.toUpperCase() : ''}
                   </button>
