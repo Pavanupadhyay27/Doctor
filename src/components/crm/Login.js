@@ -18,7 +18,6 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
-    // Production-level validations
     if (!email.trim() || !password.trim()) {
       setError('Please enter both email and password.');
       return;
@@ -32,7 +31,7 @@ export default function Login() {
 
     setLoading(true);
 
-    // Simulate network authentication delay (production feel)
+    // Instant validation feel (no artificial shaking or delay transitions)
     setTimeout(() => {
       const success = login(email, password);
       setLoading(false);
@@ -40,245 +39,289 @@ export default function Login() {
       if (!success) {
         setError('Invalid email or password. Please try again.');
       }
-    }, 1000);
+    }, 400);
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-tr from-teal-950/20 via-orange-500/5 to-teal-800/10 px-4">
+    <div style={{
+      display: 'flex',
+      flexDirection: 'row',
+      minHeight: '100vh',
+      width: '100vw',
+      overflow: 'hidden',
+      backgroundColor: '#ffffff'
+    }}>
       
-      {/* Compact & Super Clean Card Container */}
+      {/* Left side: Premium Doctor image (Hidden on mobile) */}
       <div 
         style={{
-          width: '100%',
-          maxWidth: '380px',
-          padding: '32px 30px',
-          backgroundColor: '#ffffff',
-          borderRadius: '24px',
-          border: '1px solid rgba(18, 33, 30, 0.06)',
-          boxShadow: '0 25px 50px -12px rgba(18, 33, 30, 0.08)'
+          width: '55%',
+          position: 'relative',
+          backgroundColor: '#050b0a',
+          borderRight: '1px solid var(--border)'
         }}
+        className="hidden md:block"
       >
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundImage: 'url("/Dr/doctor_login.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'brightness(0.85)'
+        }} />
         
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <div 
-            style={{ 
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%', 
-              backgroundColor: 'rgba(15, 107, 92, 0.06)', 
-              color: 'var(--primary)', 
+        {/* Soft luxury branding stamp */}
+        <div style={{
+          position: 'absolute',
+          bottom: '60px',
+          left: '60px',
+          zIndex: 10,
+          color: '#ffffff',
+          maxWidth: '460px'
+        }}>
+          <h1 style={{ 
+            fontFamily: 'var(--font-heading)', 
+            fontSize: '32px', 
+            fontWeight: '850', 
+            color: '#ffffff', 
+            letterSpacing: '-1px', 
+            margin: 0,
+            lineHeight: '1.2'
+          }}>
+            Aura Aesthetics
+          </h1>
+          <p style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.7)', marginTop: '8px', lineHeight: '1.4' }}>
+            Board-certified clinical dermatology, laser therapies, and advanced skin care technologies.
+          </p>
+        </div>
+      </div>
+
+      {/* Right side: Login form (Instant, static, aesthetic & clean) */}
+      <div 
+        style={{
+          flexGrow: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '40px 30px',
+          backgroundColor: '#ffffff'
+        }}
+        className="w-full md:w-[45%]"
+      >
+        <div style={{ width: '100%', maxWidth: '380px' }}>
+          
+          {/* Header */}
+          <div style={{ marginBottom: '28px' }}>
+            <div style={{ 
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px', 
+              backgroundColor: '#F8FAFC', 
+              border: '1px solid var(--border)',
+              color: 'var(--text-dark)', 
               display: 'inline-flex',
               alignItems: 'center', 
               justifyContent: 'center', 
-              fontSize: '15px', 
-              marginBottom: '10px',
-              boxShadow: 'inset 0 1px 2px rgba(15, 107, 92, 0.1)'
-            }}
-          >
-            <i className="fas fa-user-shield"></i>
+              fontSize: '16px', 
+              marginBottom: '14px'
+            }}>
+              <i className="fas fa-lock"></i>
+            </div>
+            <h2 style={{ fontSize: '22px', fontWeight: '850', color: 'var(--text-dark)', marginBottom: '6px', letterSpacing: '-0.5px' }}>
+              Admin Portal
+            </h2>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+              Sign in with credentials to access patient logs and clinical metrics.
+            </p>
           </div>
-          <h2 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-dark)', marginBottom: '4px', letterSpacing: '-0.5px' }}>Aura CRM Login</h2>
-          <p style={{ fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: '1.4' }}>Provide administrator credentials to access patient charts</p>
-        </div>
 
-        {error && (
-          <div 
-            style={{ 
+          {error && (
+            <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
               gap: '10px', 
-              padding: '10px 12px', 
-              marginBottom: '16px', 
+              padding: '12px 14px', 
+              marginBottom: '20px', 
               borderRadius: '10px', 
-              backgroundColor: 'rgba(232, 93, 75, 0.05)', 
-              border: '1px solid rgba(232, 93, 75, 0.15)', 
+              backgroundColor: '#FFF5F5', 
+              border: '1px solid #FFE3E3', 
               color: 'var(--danger)', 
-              fontSize: '12px', 
-              fontWeight: '600'
-            }}
-          >
-            <i className="fas fa-exclamation-circle" style={{ fontSize: '13px' }}></i>
-            <span>{error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          
-          {/* Email field */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '11px', fontWeight: '750', color: 'var(--text-dark)', letterSpacing: '0.3px', textTransform: 'uppercase' }} htmlFor="login-email">Administrator Email</label>
-            <div style={{ position: 'relative' }}>
-              <input 
-                type="email" 
-                id="login-email" 
-                placeholder="admin@auraclinic.in"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                onFocus={() => setFocusedField('email')}
-                onBlur={() => setFocusedField(null)}
-                style={{
-                  width: '100%',
-                  padding: '11px 12px 11px 38px', // Ensured 38px left padding so text never overlaps icon
-                  fontSize: '13.5px',
-                  color: 'var(--text-dark)',
-                  backgroundColor: '#ffffff',
-                  border: focusedField === 'email' ? '1.5px solid var(--primary)' : '1.5px solid var(--border)',
-                  borderRadius: '10px',
-                  outline: 'none',
-                  transition: 'all 0.2s ease',
-                  boxShadow: focusedField === 'email' ? '0 0 0 3px rgba(15, 107, 92, 0.08)' : 'none'
-                }}
-              />
-              <i 
-                className="far fa-envelope" 
-                style={{ 
-                  position: 'absolute', 
-                  left: '13px', 
-                  top: '50%', 
-                  transform: 'translateY(-50%)', 
-                  color: focusedField === 'email' ? 'var(--primary)' : 'var(--text-muted)', 
-                  fontSize: '13px',
-                  transition: 'color 0.2s ease',
-                  pointerEvents: 'none'
-                }}
-              ></i>
-            </div>
-          </div>
-
-          {/* Password field */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '11px', fontWeight: '750', color: 'var(--text-dark)', letterSpacing: '0.3px', textTransform: 'uppercase' }} htmlFor="login-password">Portal Password</label>
-            <div style={{ position: 'relative' }}>
-              <input 
-                type={showPassword ? 'text' : 'password'} 
-                id="login-password" 
-                placeholder="••••••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                onFocus={() => setFocusedField('password')}
-                onBlur={() => setFocusedField(null)}
-                style={{
-                  width: '100%',
-                  padding: '11px 36px 11px 38px', // Ensured 38px left padding so text never overlaps icon
-                  fontSize: '13.5px',
-                  color: 'var(--text-dark)',
-                  backgroundColor: '#ffffff',
-                  border: focusedField === 'password' ? '1.5px solid var(--primary)' : '1.5px solid var(--border)',
-                  borderRadius: '10px',
-                  outline: 'none',
-                  transition: 'all 0.2s ease',
-                  boxShadow: focusedField === 'password' ? '0 0 0 3px rgba(15, 107, 92, 0.08)' : 'none'
-                }}
-              />
-              <i 
-                className="fas fa-lock" 
-                style={{ 
-                  position: 'absolute', 
-                  left: '13px', 
-                  top: '50%', 
-                  transform: 'translateY(-50%)', 
-                  color: focusedField === 'password' ? 'var(--primary)' : 'var(--text-muted)', 
-                  fontSize: '13px',
-                  transition: 'color 0.2s ease',
-                  pointerEvents: 'none'
-                }}
-              ></i>
-              <button
-                type="button"
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                  outline: 'none'
-                }}
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex="-1"
-              >
-                <i className={`far ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
-            </div>
-          </div>
-
-          {/* Submission button */}
-          <button 
-            type="submit" 
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '11px 22px',
-              backgroundColor: 'var(--primary)',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '10px',
-              fontSize: '14px',
+              fontSize: '12.5px', 
               fontWeight: '700',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-              boxShadow: '0 6px 18px rgba(15, 107, 92, 0.12)',
-              transition: 'all 0.25s ease',
-              marginTop: '6px',
-              outline: 'none'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--primary-light)';
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 10px 22px rgba(15, 107, 92, 0.18)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--primary)';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 6px 18px rgba(15, 107, 92, 0.12)';
-            }}
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <i className="fas fa-circle-notch fa-spin"></i> Authenticating...
-              </span>
-            ) : (
-              <>Sign In to Portal <i className="fas fa-sign-in-alt"></i></>
-            )}
-          </button>
-        </form>
+              animation: 'none',
+              transition: 'none'
+            }}>
+              <i className="fas fa-exclamation-circle" style={{ fontSize: '13px' }}></i>
+              <span>{error}</span>
+            </div>
+          )}
 
-        {/* Compact Credentials reminder block */}
-        <div 
-          style={{
-            marginTop: '20px',
-            padding: '12px 14px',
-            backgroundColor: 'rgba(15, 107, 92, 0.02)',
-            border: '1.5px dashed rgba(15, 107, 92, 0.12)',
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            
+            {/* Email field */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '0.5px', textTransform: 'uppercase' }} htmlFor="login-email">
+                Email Address
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input 
+                  type="email" 
+                  id="login-email" 
+                  placeholder="admin@auraclinic.in"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  onFocus={() => setFocusedField('email')}
+                  onBlur={() => setFocusedField(null)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 12px 12px 38px',
+                    fontSize: '14px',
+                    color: 'var(--text-dark)',
+                    backgroundColor: '#ffffff',
+                    border: focusedField === 'email' ? '1.5px solid var(--text-dark)' : '1.5px solid var(--border)',
+                    borderRadius: '10px',
+                    outline: 'none',
+                    transition: 'none',
+                    boxShadow: 'none'
+                  }}
+                />
+                <i className="far fa-envelope" style={{ 
+                  position: 'absolute', 
+                  left: '13px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  color: focusedField === 'email' ? 'var(--text-dark)' : 'var(--text-muted)', 
+                  fontSize: '13.5px',
+                  pointerEvents: 'none'
+                }} />
+              </div>
+            </div>
+
+            {/* Password field */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '0.5px', textTransform: 'uppercase' }} htmlFor="login-password">
+                Portal Password
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input 
+                  type={showPassword ? 'text' : 'password'} 
+                  id="login-password" 
+                  placeholder="••••••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  onFocus={() => setFocusedField('password')}
+                  onBlur={() => setFocusedField(null)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 36px 12px 38px',
+                    fontSize: '14px',
+                    color: 'var(--text-dark)',
+                    backgroundColor: '#ffffff',
+                    border: focusedField === 'password' ? '1.5px solid var(--text-dark)' : '1.5px solid var(--border)',
+                    borderRadius: '10px',
+                    outline: 'none',
+                    transition: 'none',
+                    boxShadow: 'none'
+                  }}
+                />
+                <i className="fas fa-lock" style={{ 
+                  position: 'absolute', 
+                  left: '13px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  color: focusedField === 'password' ? 'var(--text-dark)' : 'var(--text-muted)', 
+                  fontSize: '13.5px',
+                  pointerEvents: 'none'
+                }} />
+                <button
+                  type="button"
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-muted)',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    outline: 'none'
+                  }}
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex="-1"
+                >
+                  <i className={`far ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </button>
+              </div>
+            </div>
+
+            {/* Submission button */}
+            <button 
+              type="submit" 
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '12px 22px',
+                backgroundColor: 'var(--text-dark)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '10px',
+                fontSize: '14px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                marginTop: '10px',
+                outline: 'none',
+                boxShadow: 'none',
+                transition: 'none'
+              }}
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <i className="fas fa-circle-notch fa-spin"></i> Authenticating...
+                </span>
+              ) : (
+                <>Sign In to Portal <i className="fas fa-sign-in-alt"></i></>
+              )}
+            </button>
+          </form>
+
+          {/* Credentials Info Panel */}
+          <div style={{
+            marginTop: '28px',
+            padding: '14px',
+            backgroundColor: '#F8FAFC',
+            border: '1px solid var(--border)',
             borderRadius: '12px',
-            fontSize: '11.5px',
+            fontSize: '12px',
             color: 'var(--text-muted)',
             display: 'flex',
             flexDirection: 'column',
-            gap: '4px'
-          }}
-        >
-          <div style={{ fontWeight: '700', color: 'var(--text-dark)', marginBottom: '1px' }}>Portal Access Details:</div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>Email:</span>
-            <code style={{ background: '#FAF9F6', border: '1px solid var(--border)', px: '4px', py: '1px', borderRadius: '4px', color: 'var(--primary)', fontWeight: '600' }}>admin@auraclinic.in</code>
+            gap: '6px'
+          }}>
+            <div style={{ fontWeight: '800', color: 'var(--text-dark)' }}>Demo Account Details:</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Email:</span>
+              <code style={{ background: '#ffffff', border: '1px solid var(--border)', padding: '2px 6px', borderRadius: '4px', color: 'var(--text-dark)', fontWeight: '700' }}>admin@auraclinic.in</code>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Password:</span>
+              <code style={{ background: '#ffffff', border: '1px solid var(--border)', padding: '2px 6px', borderRadius: '4px', color: 'var(--text-dark)', fontWeight: '700' }}>AuraCRMProtect2026!</code>
+            </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>Password:</span>
-            <code style={{ background: '#FAF9F6', border: '1px solid var(--border)', px: '4px', py: '1px', borderRadius: '4px', color: 'var(--primary)', fontWeight: '600' }}>AuraCRMProtect2026!</code>
-          </div>
-        </div>
 
+        </div>
       </div>
+
     </div>
   );
 }
