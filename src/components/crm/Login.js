@@ -68,7 +68,7 @@ export default function Login() {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundImage: 'url("/Dr/doctor_login.png")',
+          backgroundImage: 'url("/doctor_login.png")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           filter: 'brightness(0.85)'
@@ -92,7 +92,7 @@ export default function Login() {
             margin: 0,
             lineHeight: '1.2'
           }}>
-            Aura Aesthetics
+            Aura Clinic
           </h1>
           <p style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.7)', marginTop: '8px', lineHeight: '1.4' }}>
             Board-certified clinical dermatology, laser therapies, and advanced skin care technologies.
