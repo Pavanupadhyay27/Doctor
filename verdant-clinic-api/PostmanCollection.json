@@ -1,0 +1,855 @@
+{
+  "info": {
+    "name": "Verdant Skin Clinic CRM API",
+    "description": "REST API endpoints for testing user authentication, leads, patients, appointments, templates, and treatments.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.success && response.token) {",
+                  "    pm.environment.set(\"jwt_token\", response.token);",
+                  "    console.log(\"Saved JWT to environment variable: jwt_token\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@auraclinic.in\",\n  \"password\": \"AuraCRMProtect2026!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Ananya Sharma\",\n  \"email\": \"doctor.ananya@auraclinic.in\",\n  \"password\": \"DoctorSecurePassword2026!\",\n  \"role\": \"doctor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Leads",
+      "item": [
+        {
+          "name": "Get All Leads",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads?search=Sarah&sortBy=createdAt&sortDir=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Sarah"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Lead (Public Link)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aria Sen\",\n  \"phone\": \"9876543210\",\n  \"email\": \"aria.sen@outlook.com\",\n  \"treatmentId\": null,\n  \"source\": \"Website\",\n  \"message\": \"Interested in skin evening out. First-time client.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Lead Status (Convert)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"converted\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads/60c72b2f9b1d8e123456789a",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "60c72b2f9b1d8e123456789a"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Timeline Note to Lead",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Spoke on WhatsApp. Confirmed interest in dermal fillers.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads/60c72b2f9b1d8e123456789a/notes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "60c72b2f9b1d8e123456789a",
+                "notes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Lead Custom Message",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customBody\": \"Hello Aria, we look forward to meeting you!\",\n  \"channel\": \"WhatsApp\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads/60c72b2f9b1d8e123456789a/send-message",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "60c72b2f9b1d8e123456789a",
+                "send-message"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fetch Dashboard Stats",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads/stats/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "stats",
+                "dashboard"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Patients",
+      "item": [
+        {
+          "name": "Get All Patients",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients?search=Marcus&page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Marcus"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Patient Detail with Appts",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/60c72b2f9b1d8e123456789b",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients",
+                "60c72b2f9b1d8e123456789b"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Clinical Note to Patient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Prescribed SPF 50 sunscreen. Re-evaluating in 4 weeks.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/60c72b2f9b1d8e123456789b/history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients",
+                "60c72b2f9b1d8e123456789b",
+                "history"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Get Appointments by Month",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments?month=2026-07",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appointments"
+              ],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-07"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Book Appointment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"60c72b2f9b1d8e123456789b\",\n  \"date\": \"2026-07-28\",\n  \"time\": \"14:30\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appointments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reschedule or Update Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2026-07-30\",\n  \"time\": \"11:00 AM\",\n  \"status\": \"booked\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointments/60c72b2f9b1d8e123456789c",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appointments",
+                "60c72b2f9b1d8e123456789c"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Templates",
+      "item": [
+        {
+          "name": "Get Templates List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "templates"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Template (Doctor Only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Laser Followup Reminder\",\n  \"channel\": \"Email\",\n  \"subject\": \"Post-Laser Resurfacing Care Checkin\",\n  \"body\": \"Hi {{PatientName}}, hope your skin is healing well from the Laser session!\",\n  \"image\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "templates"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Template (Doctor Only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": \"Hi {{PatientName}}! 👋 Thank you for scheduling with Verdant Skin Clinic. Your appointment is on {{AppointmentDate}} at {{AppointmentTime}}.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/templates/60c72b2f9b1d8e123456789d",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "templates",
+                "60c72b2f9b1d8e123456789d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Preview Rendered Template",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/templates/60c72b2f9b1d8e123456789d/preview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "templates",
+                "60c72b2f9b1d8e123456789d",
+                "preview"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Treatments",
+      "item": [
+        {
+          "name": "Get Treatments (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/treatments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "treatments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Treatment (Doctor Only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"HydraFacial Skin Rejuvenation\",\n  \"icon\": \"fa-droplet\",\n  \"short\": \"Deep exfoliation, vacuum extraction, and antioxidant hydration.\",\n  \"who\": \"Best for instant skin glow and deep cleansing.\",\n  \"steps\": [\"Cleansing exfoliation\", \"Acid peel\", \"Vortex extraction\", \"Antioxidant infusion\"],\n  \"recovery\": \"None\",\n  \"price\": \"$150 - $250\",\n  \"faqs\": [\n    { \"q\": \"How often should I get it?\", \"a\": \"Once a month is recommended for optimal hydration and texture.\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/treatments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "treatments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Treatment (Doctor Only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": \"$180 - $280\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/treatments/60c72b2f9b1d8e123456789e",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "treatments",
+                "60c72b2f9b1d8e123456789e"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    }
+  ]
+}

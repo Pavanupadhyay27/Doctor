@@ -1,0 +1,137 @@
+{
+  "leads": [
+    {
+      "id": "lead-1",
+      "name": "Sarah Connor",
+      "phone": "+91 90212 34567",
+      "email": "sarah.c@skymail.com",
+      "treatment": "Laser Skin Resurfacing",
+      "source": "Website Form",
+      "status": "New",
+      "date": "2026-07-20",
+      "time": "10:30",
+      "notes": "Concerned about sunspots and acne scarring. Prefers afternoon bookings.",
+      "history": [
+        { "type": "system", "text": "Lead submitted via Website Form", "date": "2026-07-20 10:30" },
+        { "type": "auto-msg", "text": "Sent Welcome Template via WhatsApp", "date": "2026-07-20 10:31" }
+      ]
+    },
+    {
+      "id": "lead-2",
+      "name": "James Carter",
+      "phone": "+91 83234 56789",
+      "email": "j.carter@workplace.org",
+      "treatment": "Botox & Dermal Fillers",
+      "source": "WhatsApp Click",
+      "status": "Contacted",
+      "date": "2026-07-19",
+      "time": "14:15",
+      "notes": "Interested in brow lift line reduction. Callback Tuesday morning.",
+      "history": [
+        { "type": "system", "text": "Lead initiated via WhatsApp widget", "date": "2026-07-19 14:15" },
+        { "type": "note", "text": "Called. Rescheduled callback for Tuesday morning.", "date": "2026-07-19 16:00", "author": "Receptionist" }
+      ]
+    },
+    {
+      "id": "lead-3",
+      "name": "Elena Rostova",
+      "phone": "+91 98765 43210",
+      "email": "elena.rostov@webmail.ru",
+      "treatment": "Chemical Peels",
+      "source": "Instagram Ad",
+      "status": "Booked",
+      "date": "2026-07-18",
+      "time": "09:00",
+      "notes": "Wants glowing skin for wedding in September. Scheduled visual consultation.",
+      "history": [
+        { "type": "system", "text": "Lead captured via Instagram Ad campaign", "date": "2026-07-18 09:00" },
+        { "type": "note", "text": "Spoke on WhatsApp. Booked consultation for 2026-07-22.", "date": "2026-07-18 11:30", "author": "Receptionist" }
+      ]
+    },
+    {
+      "id": "lead-4",
+      "name": "Marcus Brody",
+      "phone": "+91 74567 89012",
+      "email": "mbrody@museum.org",
+      "treatment": "Advanced Acne Therapy",
+      "source": "Doctor Referral",
+      "status": "Converted",
+      "date": "2026-07-15",
+      "time": "11:00",
+      "notes": "Referred by Dr. Jones. Severe cystic acne flare-ups. Converted to patient.",
+      "history": [
+        { "type": "system", "text": "Lead logged manually from referral slip", "date": "2026-07-15 11:00" },
+        { "type": "note", "text": "Consultation conducted. Enrolled in 6-month Acne Therapy Plan.", "date": "2026-07-16 15:00", "author": "Dr. Ananya Sharma" }
+      ]
+    }
+  ],
+  "patients": [
+    {
+      "id": "pat-1",
+      "leadId": "lead-4",
+      "name": "Marcus Brody",
+      "phone": "+91 74567 89012",
+      "email": "mbrody@museum.org",
+      "historyNotes": "Allergy: Penicillin. High skin sensitivity.",
+      "treatmentPlan": "Accutane + Salicylic Peels monthly",
+      "visitHistory": [
+        { "date": "2026-07-16", "type": "Consultation", "doctor": "Dr. Ananya Sharma", "notes": "Initial assessment. Cystic lesions on cheeks." }
+      ],
+      "documents": [
+        { "name": "Visia_Skin_Scan_Report.pdf", "size": "1.4 MB", "date": "2026-07-16" }
+      ]
+    }
+  ],
+  "appointments": [
+    {
+      "id": "apt-1",
+      "leadId": "lead-3",
+      "patientName": "Elena Rostova",
+      "date": "2026-07-23",
+      "time": "10:00",
+      "treatment": "Chemical Peels",
+      "status": "Scheduled",
+      "notes": "Pre-care instructions shared via email."
+    },
+    {
+      "id": "apt-2",
+      "leadId": "lead-1",
+      "patientName": "Sarah Connor",
+      "date": "2026-07-17",
+      "time": "13:30",
+      "treatment": "Laser Skin Resurfacing",
+      "status": "Completed",
+      "notes": "First session completed successfully."
+    },
+    {
+      "id": "apt-3",
+      "leadId": "lead-4",
+      "patientName": "Marcus Brody",
+      "date": "2026-07-28",
+      "time": "11:30",
+      "treatment": "Advanced Acne Therapy",
+      "status": "Scheduled",
+      "notes": "First salicylic peel application session."
+    }
+  ],
+  "templates": [
+    {
+      "id": "welcome_default",
+      "name": "Standard Welcome Greeting",
+      "channel": "whatsapp",
+      "content": "Hi {{PatientName}}! 👋\n\nThank you for reaching out to Aura Dermatology! We have received your inquiry regarding {{TreatmentInterested}}.\n\nDr. Sharma and our care team will contact you shortly to schedule your consultation.\n\nIn the meantime, feel free to call us at +91 98765 43210 or visit our clinic at 404 Green Valley Blvd.\n\nWarm regards,\nThe Aura Care Team"
+    },
+    {
+      "id": "laser_welcome",
+      "name": "Laser Resurfacing Welcome",
+      "channel": "email",
+      "content": "Subject: Your Laser Consultation at Aura Dermatology\n\nDear {{PatientName}},\n\nThank you for requesting information on {{TreatmentInterested}}. We are excited to guide you on your skin rejuvenation journey.\n\nHere is what you can expect during your consultation:\n- A detailed scan using our Visia Skin Analysis tool.\n- A customized treatment schedule based on your recovery availability.\n- A complete overview of pre-care and post-care guidelines.\n\nOur concierge will call you within 24 hours. If you want to speak with us immediately, call +91 98765 43210.\n\nSincerely,\nDr. Ananya Sharma, MD\nAura Dermatology & Aesthetics"
+    },
+    {
+      "id": "followup_reminder",
+      "name": "Appointment Reminder",
+      "channel": "sms",
+      "content": "Hi {{PatientName}}, this is Aura Dermatology. Reminder for your upcoming consultation on {{AppointmentDate}} at {{AppointmentTime}}. Reply C to confirm or call +91 98765 43210 to reschedule."
+    }
+  ]
+}
