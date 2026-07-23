@@ -2507,6 +2507,29 @@ h1, h2, h3, h4, h5, h6 {
 .delay-400 { transition-delay: 400ms !important; }
 .delay-500 { transition-delay: 500ms !important; }
 
+/* Dashboard Flat Overrides - No Animations, Minimalist Aesthetics */
+.metrics-row .metric-card {
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.metrics-row .metric-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: var(--border) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.timeline-item-flat-hover {
+  transition: none !important;
+}
+
+.timeline-item-flat-hover:hover {
+  background-color: #F8FAFC !important;
+}
+
 
 
 
