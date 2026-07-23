@@ -37,7 +37,7 @@ export default function Treatments({ onSelectTreatment }) {
         <div className="treatments-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
           {/* Laser Card */}
           <div 
-            className="card treatment-card" 
+            className="card treatment-card reveal" 
             onMouseEnter={() => setHoveredId('laser')}
             onMouseLeave={() => setHoveredId(null)}
             style={{ 
@@ -91,7 +91,7 @@ export default function Treatments({ onSelectTreatment }) {
 
           {/* Botox Card */}
           <div 
-            className="card treatment-card" 
+            className="card treatment-card reveal delay-100" 
             onMouseEnter={() => setHoveredId('botox')}
             onMouseLeave={() => setHoveredId(null)}
             style={{ 
@@ -145,7 +145,7 @@ export default function Treatments({ onSelectTreatment }) {
 
           {/* Peels Card */}
           <div 
-            className="card treatment-card" 
+            className="card treatment-card reveal delay-200" 
             onMouseEnter={() => setHoveredId('peel')}
             onMouseLeave={() => setHoveredId(null)}
             style={{ 
@@ -199,7 +199,7 @@ export default function Treatments({ onSelectTreatment }) {
 
           {/* Acne Card */}
           <div 
-            className="card treatment-card" 
+            className="card treatment-card reveal delay-300" 
             onMouseEnter={() => setHoveredId('acne')}
             onMouseLeave={() => setHoveredId(null)}
             style={{ 
