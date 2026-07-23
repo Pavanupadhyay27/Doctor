@@ -11,9 +11,10 @@ import FormWizard from '@/components/public/FormWizard';
 import AdminShell from '@/components/crm/AdminShell';
 import Login from '@/components/crm/Login';
 import TreatmentDetailPage from '@/components/public/TreatmentDetailPage';
+import Toast from '@/components/common/Toast';
 
 export default function Home() {
-  const { addLead, isAuthenticated, isBookingModalOpen, setIsBookingModalOpen } = useCRM();
+  const { addLead, isAuthenticated, isBookingModalOpen, setIsBookingModalOpen, toast, setToast, showToast } = useCRM();
   const [activeView, setActiveView] = useState('public');
   const [selectedTreatment, setSelectedTreatment] = useState('');
   const [activeTreatmentPageId, setActiveTreatmentPageId] = useState(null);
@@ -89,7 +90,7 @@ export default function Home() {
   const handleQuickSubmit = (e) => {
     e.preventDefault();
     if (!quickData.name.trim() || !quickData.phone.trim() || !quickData.treatment) {
-      alert('Please fill out all fields in the consultation strip.');
+      showToast('Please fill out all fields in the consultation strip.', 'error');
       return;
     }
 
@@ -101,7 +102,7 @@ export default function Home() {
       notes: 'Submitted via Quick Booking Strip.'
     });
 
-    alert(`Thank you, ${quickData.name}! Your inquiry for ${quickData.treatment} has been logged in our CRM. Dr. Sharma's team will contact you within 24 hours.`);
+    showToast(`Thank you, ${quickData.name}! Your inquiry for ${quickData.treatment} has been logged. Dr. Sharma's team will contact you within 24 hours.`, 'success');
     setQuickData({ name: '', phone: '', treatment: '' });
   };
 
@@ -893,6 +894,8 @@ export default function Home() {
       <div className="mobile-sticky-cta">
         <a href="#contact" className="btn btn-accent btn-full">Book Free Consultation</a>
       </div>
+
+      <Toast toast={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

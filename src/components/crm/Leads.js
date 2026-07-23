@@ -10,7 +10,8 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
     updateLeadStatus, 
     addLeadNote, 
     saveLeadNotesContent, 
-    deleteLead
+    deleteLead,
+    showToast
   } = useCRM();
 
   // Search & Filter state
@@ -63,9 +64,9 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
     const success = await deleteLead(activeLead.id);
     if (success) {
       setActiveLeadId(null);
-      alert('Lead record successfully deleted.');
+      showToast('Lead record successfully deleted.', 'success');
     } else {
-      alert('Failed to delete lead.');
+      showToast('Failed to delete lead.', 'error');
     }
   };
 
@@ -87,7 +88,7 @@ export default function Leads({ globalSearch, setGlobalSearch }) {
       'Auto Outbox'
     );
     
-    alert(`Message simulated & sent successfully to ${activeLead.name} via ${template.channel.toUpperCase()}!`);
+    showToast(`Message simulated & sent successfully to ${activeLead.name} via ${template.channel.toUpperCase()}!`, 'success');
     setSelectedTemplateId('');
   };
 

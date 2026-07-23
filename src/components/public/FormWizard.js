@@ -84,25 +84,25 @@ export default function FormWizard({ selectedTreatment, setSelectedTreatment }) 
   const handleNext = () => {
     if (step === 1) {
       if (!formData.name.trim()) {
-        alert('Please enter your full name.');
+        showToast('Please enter your full name.', 'error');
         return;
       }
       if (!validatePhone(formData.phone)) {
-        alert('Please enter a valid mobile number (at least 10 digits).');
+        showToast('Please enter a valid mobile number (at least 10 digits).', 'error');
         return;
       }
       if (!validateEmail(formData.email)) {
-        alert('Please enter a valid email address.');
+        showToast('Please enter a valid email address.', 'error');
         return;
       }
     }
     if (step === 2) {
       if (!formData.date) {
-        alert('Please click on a date in the calendar.');
+        showToast('Please click on a date in the calendar.', 'error');
         return;
       }
       if (!formData.consent) {
-        alert('Please accept the data privacy consent check.');
+        showToast('Please accept the data privacy consent check.', 'error');
         return;
       }
       handleSubmit();

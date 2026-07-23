@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useCRM } from '@/context/CRMState';
 
 export default function Templates() {
-  const { templates, saveTemplate, addTemplate } = useCRM();
+  const { templates, saveTemplate, addTemplate, showToast } = useCRM();
   
   // Selected Template & Filters state
   const [activeId, setActiveId] = useState(null);
@@ -34,7 +34,7 @@ export default function Templates() {
     if (!channelOpt) return;
     const cleanChannel = channelOpt.trim().toLowerCase();
     if (!['whatsapp', 'sms', 'email'].includes(cleanChannel)) {
-      alert('Invalid channel! Must be: whatsapp, sms, or email.');
+      showToast('Invalid channel! Must be: whatsapp, sms, or email.', 'error');
       return;
     }
 
@@ -50,9 +50,9 @@ export default function Templates() {
 
     if (newTmpl) {
       setActiveId(newTmpl.id);
-      alert(`Template "${name}" successfully created!`);
+      showToast(`Template "${name}" successfully created!`, 'success');
     } else {
-      alert('Failed to create new template.');
+      showToast('Failed to create new template.', 'error');
     }
   };
 
@@ -331,7 +331,7 @@ export default function Templates() {
               </div>
 
               <button 
-                onClick={() => alert('All edits synced and written to PostgreSQL Database.')} 
+                onClick={() => showToast('All edits synced and written to PostgreSQL Database.', 'success')} 
                 className="btn btn-primary"
                 style={{ alignSelf: 'flex-start', padding: '10px 20px', borderRadius: '8px', fontSize: '13.5px', fontWeight: '700' }}
               >

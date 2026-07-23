@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useCRM } from '@/context/CRMState';
 
 export default function Kanban({ globalSearch, setGlobalSearch }) {
-  const { leads, updateLeadStatus, addLeadNote, saveLeadNotesContent, deleteLead, templates } = useCRM();
+  const { leads, updateLeadStatus, addLeadNote, saveLeadNotesContent, deleteLead, templates, showToast } = useCRM();
   
   // Local Drawer state (reused from Leads for self-containment)
   const [activeLeadId, setActiveLeadId] = useState(null);
@@ -68,9 +68,9 @@ export default function Kanban({ globalSearch, setGlobalSearch }) {
     const success = await deleteLead(activeLead.id);
     if (success) {
       setActiveLeadId(null);
-      alert('Lead record successfully deleted.');
+      showToast('Lead record successfully deleted.', 'success');
     } else {
-      alert('Failed to delete lead.');
+      showToast('Failed to delete lead.', 'error');
     }
   };
 
@@ -92,7 +92,7 @@ export default function Kanban({ globalSearch, setGlobalSearch }) {
       'Auto Outbox'
     );
     
-    alert(`Message simulated & sent successfully to ${activeLead.name} via ${template.channel.toUpperCase()}!`);
+    showToast(`Message simulated & sent successfully to ${activeLead.name} via ${template.channel.toUpperCase()}!`, 'success');
     setSelectedTemplateId('');
   };
 

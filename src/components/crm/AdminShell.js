@@ -9,9 +9,10 @@ import Calendar from './Calendar';
 import Templates from './Templates';
 import Analytics from './Analytics';
 import { useCRM } from '@/context/CRMState';
+import Toast from '@/components/common/Toast';
 
 export default function AdminShell({ onViewChange }) {
-  const { logout } = useCRM();
+  const { logout, toast, setToast } = useCRM();
   const [activePane, setActivePane] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -272,6 +273,8 @@ export default function AdminShell({ onViewChange }) {
           </div>
         </div>
       </main>
+
+      <Toast toast={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

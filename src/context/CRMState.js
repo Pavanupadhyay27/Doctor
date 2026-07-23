@@ -102,6 +102,15 @@ export function CRMProvider({ children }) {
   const [activeModalTreatmentId, setActiveModalTreatmentId] = useState(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
+  // In-app Toast notification state
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 4500);
+  };
+
   // Authentication state
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -519,6 +528,9 @@ export function CRMProvider({ children }) {
       setActiveModalTreatmentId,
       isBookingModalOpen,
       setIsBookingModalOpen,
+      toast,
+      setToast,
+      showToast,
       addLead,
       updateLeadStatus,
       addLeadNote,

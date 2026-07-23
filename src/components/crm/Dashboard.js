@@ -11,7 +11,8 @@ export default function Dashboard({ onNavigate }) {
     addLeadNote, 
     saveLeadNotesContent, 
     deleteLead, 
-    templates 
+    templates,
+    showToast
   } = useCRM();
 
   // Metrics calculations
@@ -70,8 +71,9 @@ export default function Dashboard({ onNavigate }) {
     const success = await deleteLead(activeLead.id);
     if (success) {
       setActiveLeadId(null);
+      showToast('Lead record successfully deleted.', 'success');
     } else {
-      alert('Failed to delete lead.');
+      showToast('Failed to delete lead.', 'error');
     }
   };
 
@@ -94,7 +96,7 @@ export default function Dashboard({ onNavigate }) {
     );
     
     setSelectedTemplateId('');
-    alert(`Simulated outgoing template sent to ${activeLead.name}.`);
+    showToast(`Simulated outgoing template sent to ${activeLead.name}.`, 'success');
   };
 
   const getCompiledPreview = () => {
