@@ -51,17 +51,28 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
     alert('Clinical visit logged successfully.');
   };
 
-  const handleMockUpload = () => {
-    if (!activePatientId) return;
-    const docNames = [
-      'Visia_Rejuvenation_Scan_v2.pdf',
-      'Biopsy_Lab_Results.pdf',
-      'Consent_Form_Signature.pdf',
-      'Pre_Care_Checklist.pdf'
-    ];
-    const randomName = docNames[Math.floor(Math.random() * docNames.length)];
-    addPatientDocument(activePatientId, randomName);
-    alert(`Mock file successfully uploaded: ${randomName}`);
+  const handleRealUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !activePatientId) return;
+
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      alert('Please select a valid PDF file.');
+      return;
+    }
+
+    const success = await addPatientDocument(activePatientId, file);
+    if (success) {
+      alert('Document successfully uploaded & saved to patient chart.');
+    } else {
+      alert('Failed to upload document.');
+    }
+  };
+
+  const handleDownloadDocument = (patientId, docName) => {
+    const token = localStorage.getItem('aura_crm_token');
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const downloadUrl = `${baseUrl}/patients/${patientId}/documents/${encodeURIComponent(docName)}/download?token=${token}`;
+    window.open(downloadUrl, '_blank');
   };
 
   return (
@@ -227,9 +238,16 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
 
               {drawerTab === 'docs' && (
                 <div>
+                  <input 
+                    type="file" 
+                    id="patient-report-file-input" 
+                    accept=".pdf,application/pdf"
+                    style={{ display: 'none' }}
+                    onChange={handleRealUpload}
+                  />
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <h4 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Stored Files</h4>
-                    <button onClick={handleMockUpload} className="btn btn-outline btn-sm" style={{ padding: '6px 12px', fontSize: '12px' }}>
+                    <button onClick={() => document.getElementById('patient-report-file-input').click()} className="btn btn-outline btn-sm" style={{ padding: '6px 12px', fontSize: '12px' }}>
                       <i className="fas fa-file-upload"></i> Upload Lab Report
                     </button>
                   </div>
@@ -246,7 +264,7 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
                             <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{doc.size} · Uploaded: {doc.date}</div>
                           </div>
                         </div>
-                        <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto', padding: '4px 8px' }} onClick={() => alert(`Downloading ${doc.name} (Simulated)`)}>
+                        <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto', padding: '4px 8px' }} onClick={() => handleDownloadDocument(activePatient.id, doc.name)}>
                           <i className="fas fa-download"></i>
                         </button>
                       </div>

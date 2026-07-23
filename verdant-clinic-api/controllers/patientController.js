@@ -208,38 +208,103 @@ exports.updatePatient = async (req, res, next) => {
   }
 };
 
-// @desc    Mock Document upload endpoint
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+}).single('document');
+
+// @desc    Real Document upload endpoint using Multer and Supabase Storage
 // @route   POST /api/patients/:id/upload
 // @access  Private (Doctor, Receptionist)
 exports.uploadDocument = async (req, res, next) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ success: false, error: err.message });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No file uploaded' });
+    }
+
+    try {
+      // 1. Fetch Patient
+      const { data: patient } = await supabase
+        .from('patients')
+        .select('id')
+        .eq('id', req.params.id)
+        .maybeSingle();
+
+      if (!patient) {
+        return res.status(404).json({ success: false, error: 'Patient not found' });
+      }
+
+      const fileBuffer = req.file.buffer;
+      const originalName = req.file.originalname;
+      const mimeType = req.file.mimetype;
+      const sizeMB = `${(req.file.size / (1024 * 1024)).toFixed(2)} MB`;
+      
+      const storagePath = `${patient.id}_${originalName}`;
+
+      // 2. Upload to Supabase Storage (Ensuring bucket exists)
+      try {
+        await supabase.storage.createBucket('patient-documents', { public: true });
+      } catch (bucketErr) {
+        // Ignore error if bucket already exists
+      }
+
+      const { error: uploadError } = await supabase.storage
+        .from('patient-documents')
+        .upload(storagePath, fileBuffer, {
+          contentType: mimeType,
+          upsert: true
+        });
+
+      if (uploadError) {
+        return res.status(400).json({ success: false, error: `Upload error: ${uploadError.message}` });
+      }
+
+      // 3. Save to database
+      const { error: dbError } = await supabase
+        .from('patient_documents')
+        .insert({
+          patient_id: patient.id,
+          name: originalName,
+          size: sizeMB,
+          date: new Date().toISOString().split('T')[0],
+        });
+
+      if (dbError) {
+        return res.status(400).json({ success: false, error: `Database error: ${dbError.message}` });
+      }
+
+      // Re-fetch full patient object
+      return exports.getPatientById(req, res, next);
+    } catch (err) {
+      next(err);
+    }
+  });
+};
+
+// @desc    Download / Redirect to real document URL from Supabase Storage
+// @route   GET /api/patients/:id/documents/:docName/download
+// @access  Private (Doctor, Receptionist)
+exports.downloadDocument = async (req, res, next) => {
   try {
-    const { data: patient } = await supabase
-      .from('patients')
-      .select('id')
-      .eq('id', req.params.id)
-      .maybeSingle();
+    const { id, docName } = req.params;
+    const storagePath = `${id}_${docName}`;
 
-    if (!patient) {
-      return res.status(404).json({ success: false, error: 'Patient not found' });
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('patient-documents')
+      .getPublicUrl(storagePath);
+
+    if (!urlData || !urlData.publicUrl) {
+      return res.status(404).json({ success: false, error: 'Document URL not found' });
     }
 
-    const docName = req.body.fileName || 'scan_result.pdf';
-    
-    const { error } = await supabase
-      .from('patient_documents')
-      .insert({
-        patient_id: patient.id,
-        name: docName,
-        size: `${(Math.random() * 2 + 0.5).toFixed(1)} MB`,
-        date: new Date().toISOString().split('T')[0],
-      });
-
-    if (error) {
-      return res.status(400).json({ success: false, error: error.message });
-    }
-
-    // Re-fetch full patient object
-    return exports.getPatientById(req, res, next);
+    res.redirect(urlData.publicUrl);
   } catch (err) {
     next(err);
   }

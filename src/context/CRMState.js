@@ -90,8 +90,10 @@ export function CRMProvider({ children }) {
   // Centralized HTTP fetchWrapper with Bearer Auth Injection & automatic 401 gate expiration
   const fetchWrapper = async (endpoint, options = {}) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('aura_crm_token') : null;
+    const isMultipart = options.body instanceof FormData;
+    
     const headers = {
-      'Content-Type': 'application/json',
+      ...(!isMultipart && { 'Content-Type': 'application/json' }),
       ...(options.headers || {}),
     };
 
@@ -358,20 +360,25 @@ export function CRMProvider({ children }) {
     }
   };
 
-  const addPatientDocument = async (patientId, docName) => {
+  const addPatientDocument = async (patientId, file) => {
     try {
-      const res = await fetchWrapper(`/patients/${patientId}`, {
-        method: 'PUT',
-        body: JSON.stringify({ action: 'add_document', docName })
+      const formData = new FormData();
+      formData.append('document', file);
+
+      const res = await fetchWrapper(`/patients/${patientId}/upload`, {
+        method: 'POST',
+        body: formData
       });
       const data = await res.json();
       if (data.success) {
         const normalizedPatient = mapPatient(data.patient);
         setPatients(prev => prev.map(p => p.id === patientId || p._id === patientId ? normalizedPatient : p));
         emit('change', { type: 'patients', action: 'add_document', patient: normalizedPatient });
+        return true;
       }
     } catch (err) {
       console.error('Error uploading patient doc:', err);
+      return false;
     }
   };
 
