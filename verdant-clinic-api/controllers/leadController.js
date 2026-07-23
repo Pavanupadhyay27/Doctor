@@ -540,3 +540,26 @@ exports.getDashboardStats = async (req, res, next) => {
     next(err);
   }
 };
+
+// @desc    Delete a lead
+// @route   DELETE /api/leads/:id
+// @access  Private (Doctor, Receptionist)
+exports.deleteLead = async (req, res, next) => {
+  try {
+    const { error } = await supabase
+      .from('leads')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) {
+      return res.status(400).json({ success: false, error: error.message });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Lead deleted successfully'
+    });
+  } catch (err) {
+    next(err);
+  }
+};

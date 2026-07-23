@@ -12,6 +12,7 @@ const {
   sendMessageToLead,
   getDashboardStats,
   updateLead, // Imported for PUT route support
+  deleteLead,
 } = require('../controllers/leadController');
 
 const { protect } = require('../middleware/auth');
@@ -65,5 +66,6 @@ router.put('/:id', protect, updateLead); // Re-added PUT for Notes content savin
 router.patch('/:id/status', protect, updateLeadStatus);
 router.post('/:id/notes', protect, addLeadNote);
 router.post('/:id/send-message', protect, sendMessageToLead);
+router.delete('/:id', protect, deleteLead);
 
 module.exports = router;

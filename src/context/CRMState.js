@@ -306,6 +306,23 @@ export function CRMProvider({ children }) {
     }
   };
 
+  const deleteLead = async (leadId) => {
+    try {
+      const res = await fetchWrapper(`/leads/${leadId}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLeads(prev => prev.filter(l => l.id !== leadId && l._id !== leadId));
+        emit('change', { type: 'leads', action: 'delete', leadId });
+        return true;
+      }
+    } catch (err) {
+      console.error('Error deleting lead:', err);
+    }
+    return false;
+  };
+
   // Patient Actions
   const addPatientVisit = async (patientId, visitData) => {
     try {
@@ -435,6 +452,7 @@ export function CRMProvider({ children }) {
       updateLeadStatus,
       addLeadNote,
       saveLeadNotesContent,
+      deleteLead,
       addAppointment,
       updateAppointmentDate,
       addPatientVisit,

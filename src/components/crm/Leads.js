@@ -9,7 +9,8 @@ export default function Leads() {
     templates, 
     updateLeadStatus, 
     addLeadNote, 
-    saveLeadNotesContent 
+    saveLeadNotesContent, 
+    deleteLead
   } = useCRM();
 
   // Search & Filter state
@@ -28,9 +29,11 @@ export default function Leads() {
 
   // Filters calculation
   const filteredLeads = leads.filter(lead => {
-    const matchesSearch = lead.name.toLowerCase().includes(search.toLowerCase()) ||
-                          lead.email.toLowerCase().includes(search.toLowerCase()) ||
-                          lead.phone.includes(search);
+    const nameMatch = lead.name ? lead.name.toLowerCase().includes(search.toLowerCase()) : false;
+    const emailMatch = lead.email ? lead.email.toLowerCase().includes(search.toLowerCase()) : false;
+    const phoneMatch = lead.phone ? lead.phone.includes(search) : false;
+    const matchesSearch = nameMatch || emailMatch || phoneMatch;
+
     const matchesTreatment = !treatmentFilter || lead.treatment === treatmentFilter;
     const matchesStatus = !statusFilter || (lead.status && lead.status.toLowerCase() === statusFilter.toLowerCase());
     const matchesSource = !sourceFilter || lead.source === sourceFilter;
@@ -48,6 +51,20 @@ export default function Leads() {
     if (!newNote.trim() || !activeLeadId) return;
     addLeadNote(activeLeadId, newNote, 'Staff');
     setNewNote('');
+  };
+
+  const handleDeleteLead = async () => {
+    if (!activeLead) return;
+    const confirmDelete = window.confirm(`Are you sure you want to permanently delete lead "${activeLead.name}"?`);
+    if (!confirmDelete) return;
+    
+    const success = await deleteLead(activeLead.id);
+    if (success) {
+      setActiveLeadId(null);
+      alert('Lead record successfully deleted.');
+    } else {
+      alert('Failed to delete lead.');
+    }
   };
 
   const handleSendMockMessage = () => {
@@ -85,22 +102,89 @@ export default function Leads() {
       .replace(/{{ClinicAddress}}/g, '404 Green Valley Blvd');
   };
 
+  const getInitials = (name) => {
+    if (!name) return '??';
+    const parts = name.split(' ');
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
+
+  const getStatusBadge = (status) => {
+    const s = status ? status.toLowerCase() : '';
+    let bg = 'rgba(15, 107, 92, 0.08)';
+    let color = 'var(--primary)';
+    let border = '1px solid rgba(15, 107, 92, 0.15)';
+    
+    if (s === 'new') {
+      bg = 'rgba(63, 167, 150, 0.08)';
+      color = '#3FA796';
+      border = '1px solid rgba(63, 167, 150, 0.2)';
+    } else if (s === 'contacted') {
+      bg = 'rgba(58, 134, 200, 0.08)';
+      color = '#3A86C8';
+      border = '1px solid rgba(58, 134, 200, 0.2)';
+    } else if (s === 'booked') {
+      bg = 'rgba(155, 89, 182, 0.08)';
+      color = '#9B59B6';
+      border = '1px solid rgba(155, 89, 182, 0.2)';
+    } else if (s === 'converted') {
+      bg = 'rgba(245, 166, 35, 0.08)';
+      color = '#F5A623';
+      border = '1px solid rgba(245, 166, 35, 0.2)';
+    } else if (s === 'lost') {
+      bg = 'rgba(232, 93, 75, 0.08)';
+      color = '#E85D4B';
+      border = '1px solid rgba(232, 93, 75, 0.2)';
+    }
+
+    return (
+      <span style={{
+        display: 'inline-block',
+        padding: '5px 10px',
+        borderRadius: '8px',
+        fontSize: '11px',
+        fontWeight: '800',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        backgroundColor: bg,
+        color: color,
+        border: border
+      }}>
+        {status}
+      </span>
+    );
+  };
+
   return (
     <div>
       {/* Filters bar */}
-      <div className="table-filter-bar flex gap-4 mb-5 flex-wrap">
-        <input 
-          type="text" 
-          className="form-input" 
-          style={{ width: '240px', padding: '8px 12px' }} 
-          placeholder="Search by name, email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div style={{ 
+        backgroundColor: '#ffffff', 
+        padding: '18px 24px', 
+        borderRadius: '16px', 
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)', 
+        border: '1px solid var(--border)', 
+        display: 'flex', 
+        gap: '16px', 
+        marginBottom: '28px', 
+        flexWrap: 'wrap',
+        alignItems: 'center'
+      }}>
+        <div style={{ position: 'relative', width: '260px' }}>
+          <i className="fas fa-search" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: '13px' }}></i>
+          <input 
+            type="text" 
+            className="form-input" 
+            style={{ width: '100%', padding: '10px 14px 10px 38px', borderRadius: '10px', fontSize: '13.5px' }} 
+            placeholder="Search by name, email, phone..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         
         <select 
           className="form-select" 
-          style={{ width: '200px', padding: '8px 12px' }}
+          style={{ width: '200px', padding: '10px 14px', borderRadius: '10px', fontSize: '13.5px' }}
           value={treatmentFilter}
           onChange={(e) => setTreatmentFilter(e.target.value)}
         >
@@ -113,7 +197,7 @@ export default function Leads() {
         
         <select 
           className="form-select" 
-          style={{ width: '160px', padding: '8px 12px' }}
+          style={{ width: '160px', padding: '10px 14px', borderRadius: '10px', fontSize: '13.5px' }}
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -127,15 +211,16 @@ export default function Leads() {
 
         <select 
           className="form-select" 
-          style={{ width: '160px', padding: '8px 12px' }}
+          style={{ width: '160px', padding: '10px 14px', borderRadius: '10px', fontSize: '13.5px' }}
           value={sourceFilter}
           onChange={(e) => setSourceFilter(e.target.value)}
         >
           <option value="">All Sources</option>
-          <option value="Website Form">Website Form</option>
-          <option value="WhatsApp Click">WhatsApp widget</option>
-          <option value="Instagram Ad">Instagram Ad</option>
-          <option value="Doctor Referral">Doctor Referral</option>
+          <option value="Website">Website Form</option>
+          <option value="WhatsApp">WhatsApp Click</option>
+          <option value="Instagram">Instagram Ad</option>
+          <option value="Referral">Doctor Referral</option>
+          <option value="Walk-in">Walk-in Visit</option>
         </select>
       </div>
 
@@ -161,13 +246,15 @@ export default function Leads() {
             ) : (
               filteredLeads.map(lead => (
                 <tr key={lead.id} onClick={() => handleRowClick(lead.id)} className="hover:bg-teal-50/20 cursor-pointer">
-                  <td style={{ fontWeight: 600 }}>{lead.name}</td>
+                  <td style={{ fontWeight: 700, color: 'var(--text-dark)' }}>{lead.name}</td>
                   <td>{lead.phone}</td>
                   <td>{lead.email}</td>
-                  <td><span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--primary)' }}>{lead.treatment}</span></td>
-                  <td><span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-muted)' }}>{lead.source}</span></td>
-                  <td><span className={`badge badge-${lead.status.toLowerCase()}`}>{lead.status}</span></td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{lead.date}</td>
+                  <td><span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--primary)' }}>{lead.treatment}</span></td>
+                  <td><span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)' }}>{lead.source}</span></td>
+                  <td>{getStatusBadge(lead.status)}</td>
+                  <td style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>
+                    {lead.created_at ? new Date(lead.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}
+                  </td>
                 </tr>
               ))
             )}
@@ -179,10 +266,27 @@ export default function Leads() {
       {activeLead && (
         <div className="drawer-backdrop active" onClick={() => setActiveLeadId(null)}>
           <div className="drawer-content" onClick={(e) => e.stopPropagation()}>
-            <div className="drawer-header">
-              <div>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Lead Chart Detail</span>
-                <h3 className="drawer-title">{activeLead.name}</h3>
+            <div className="drawer-header" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{
+                  width: '46px',
+                  height: '46px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(15, 107, 92, 0.08)',
+                  color: 'var(--primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '800',
+                  fontSize: '15px',
+                  fontFamily: 'var(--font-heading)'
+                }}>
+                  {getInitials(activeLead.name)}
+                </div>
+                <div>
+                  <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Lead Chart Detail</span>
+                  <h3 className="drawer-title" style={{ fontSize: '19px', fontWeight: '850', color: 'var(--text-dark)', fontFamily: 'var(--font-heading)', margin: 0 }}>{activeLead.name}</h3>
+                </div>
               </div>
               <button onClick={() => setActiveLeadId(null)} className="btn-icon rounded-full"><i className="fas fa-times"></i></button>
             </div>
@@ -209,7 +313,7 @@ export default function Leads() {
                     </div>
                     <div className="info-item">
                       <span className="info-label">Email</span>
-                      <span className="info-val">{activeLead.email}</span>
+                      <span className="info-val">{activeLead.email || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="info-label">Source</span>
@@ -217,11 +321,13 @@ export default function Leads() {
                     </div>
                     <div className="info-item">
                       <span className="info-label">Interested in</span>
-                      <span className="info-val" style={{ color: 'var(--primary)', fontWeight: 600 }}>{activeLead.treatment}</span>
+                      <span className="info-val" style={{ color: 'var(--primary)', fontWeight: 650 }}>{activeLead.treatment}</span>
                     </div>
                     <div className="info-item">
                       <span className="info-label">Date Captured</span>
-                      <span className="info-val">{activeLead.date} {activeLead.time || ''}</span>
+                      <span className="info-val">
+                        {activeLead.created_at ? new Date(activeLead.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}
+                      </span>
                     </div>
                   </div>
 
@@ -246,10 +352,32 @@ export default function Leads() {
                     <textarea 
                       className="form-textarea" 
                       rows="5"
-                      value={activeLead.notes}
+                      value={activeLead.notes || ''}
                       onChange={(e) => saveLeadNotesContent(activeLead.id, e.target.value)}
                     ></textarea>
                   </div>
+
+                  {/* Red Delete Lead Record Button */}
+                  <button
+                    onClick={handleDeleteLead}
+                    className="btn btn-secondary btn-full"
+                    style={{
+                      marginTop: '28px',
+                      backgroundColor: 'rgba(232, 93, 75, 0.08)',
+                      color: '#E85D4B',
+                      borderColor: 'rgba(232, 93, 75, 0.2)',
+                      borderStyle: 'solid',
+                      borderWidth: '1px',
+                      fontWeight: '700',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      borderRadius: '10px'
+                    }}
+                  >
+                    <i className="far fa-trash-can"></i> Delete Lead Record
+                  </button>
                 </div>
               )}
 
