@@ -16,13 +16,13 @@ export default function Hero() {
       className="relative w-full h-screen flex items-center overflow-hidden" 
       style={{ minHeight: '100vh', backgroundColor: '#FAF9F6' }}
     >
-      {/* Bright full-width background photo */}
+      {/* Background Doctor Portrait aligned strictly to the right 50% on desktop */}
       <div 
-        className="absolute inset-0 z-0"
+        className="absolute right-0 top-0 h-full w-full md:w-[50%] z-0"
         style={{ 
           pointerEvents: 'none',
           opacity: isMounted ? 1 : 0,
-          transform: isMounted ? 'scale(1)' : 'scale(1.03)',
+          transform: isMounted ? 'scale(1)' : 'scale(1.02)',
           transition: 'opacity 1.6s cubic-bezier(0.16, 1, 0.3, 1), transform 1.6s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
@@ -30,27 +30,36 @@ export default function Hero() {
           src="/indian_doctor.png" 
           alt="Aura Clinic Dermatologist Specialist" 
           className="w-full h-full object-cover"
-          style={{ objectPosition: 'right center' }}
+          style={{ objectPosition: 'center top' }}
         />
         
-        {/* Soft, premium light gradient masks for readability */}
-        {/* Desktop: Fade from warm-light cream to transparent */}
-        <div 
-          className="absolute inset-0 hidden md:block"
-          style={{
-            background: 'linear-gradient(to right, rgba(250, 249, 246, 0.96) 0%, rgba(250, 249, 246, 0.85) 40%, rgba(250, 249, 246, 0.4) 60%, rgba(250, 249, 246, 0) 85%)'
-          }}
-        ></div>
-
-        {/* Mobile: Top-to-bottom soft cream fade */}
+        {/* Soft mobile overlay to blend top-to-bottom on mobile */}
         <div 
           className="absolute inset-0 block md:hidden"
           style={{
-            background: 'linear-gradient(to bottom, rgba(250, 249, 246, 0.95) 0%, rgba(250, 249, 246, 0.85) 50%, rgba(250, 249, 246, 0.3) 100%)'
+            background: 'linear-gradient(to bottom, rgba(250,249,246,0.5) 0%, rgba(250,249,246,0.95) 90%)'
           }}
         ></div>
       </div>
 
+      {/* Desktop Left half white-cream solid background */}
+      <div 
+        className="absolute left-0 top-0 h-full w-full md:w-[50%] hidden md:block z-5"
+        style={{
+          backgroundColor: '#FAF9F6',
+          pointerEvents: 'none'
+        }}
+      ></div>
+
+      {/* Soft desktop divider gradient to blend left cream background to right image */}
+      <div 
+        className="absolute inset-y-0 left-[45%] w-[10%] hidden md:block z-5"
+        style={{
+          background: 'linear-gradient(to right, #FAF9F6 0%, rgba(250,249,246,0.7) 40%, rgba(250,249,246,0) 100%)',
+          pointerEvents: 'none'
+        }}
+      ></div>
+      
       {/* Landing Page Content Overlay */}
       <div className="container relative z-10 w-full px-6 md:px-12 mx-auto" style={{ zIndex: 10 }}>
         <div className="max-w-xl text-left">
@@ -58,7 +67,7 @@ export default function Hero() {
           <h1 
             style={{ 
               color: 'var(--text-dark)',
-              fontSize: 'clamp(2.5rem, 5.5vw, 4.2rem)',
+              fontSize: 'clamp(2.5rem, 5.2vw, 4rem)',
               lineHeight: '1.15',
               fontFamily: 'var(--font-heading)',
               fontWeight: 850,
