@@ -6,10 +6,17 @@ import { useCRM } from '@/context/CRMState';
 export default function Calendar() {
   const { appointments, leads, updateAppointmentDate, setIsBookingModalOpen } = useCRM();
   const [currentDate, setCurrentDate] = useState(new Date());
-  
-  // Default selected date to today's date string
+
+  const getLocalDateString = (d = new Date()) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
+  // Default selected date to today's local date string
   const [selectedDateStr, setSelectedDateStr] = useState(() => {
-    return new Date().toISOString().split('T')[0];
+    return getLocalDateString();
   });
 
   const year = currentDate.getFullYear();
@@ -158,7 +165,7 @@ export default function Calendar() {
             const dateStr = cell.date.toISOString().split('T')[0];
             const dayAppointments = appointments.filter(apt => apt.date === dateStr);
             const isSelected = dateStr === selectedDateStr;
-            const isToday = new Date().toISOString().split('T')[0] === dateStr;
+            const isToday = getLocalDateString() === dateStr;
 
             return (
               <div 

@@ -2347,30 +2347,31 @@ h1, h2, h3, h4, h5, h6 {
 
 .template-item {
   padding: 16px !important;
-  border: 1px solid rgba(18, 33, 30, 0.04) !important;
-  border-bottom: 3px solid rgba(15, 107, 92, 0.06) !important; /* 3D Bevel template list items */
-  border-radius: 14px !important;
-  background-color: #F4F6F7 !important;
+  border: 1px solid rgba(18, 33, 30, 0.06) !important;
+  border-bottom: 3px solid rgba(15, 107, 92, 0.08) !important; /* 3D Bevel template list items */
+  border-radius: 12px !important;
+  background-color: #ffffff !important;
   cursor: pointer !important;
-  transition: all 0.25s ease !important;
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01) !important;
+  transition: none !important;
 }
 
 .template-item:hover {
-  transform: translateY(-2px) !important;
-  border-bottom-color: var(--primary) !important;
-  background-color: #ffffff !important;
-  box-shadow: 0 6px 15px rgba(18, 33, 30, 0.03) !important;
+  background-color: #F8FAFC !important;
+  border-color: rgba(15, 107, 92, 0.15) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .template-item.active {
   background-color: #ffffff !important;
   border-color: var(--primary) !important;
-  border-bottom-width: 4px !important;
+  border-bottom-width: 3px !important;
   border-bottom-color: var(--primary) !important;
-  box-shadow: 0 8px 20px rgba(15, 107, 92, 0.06) !important;
+  box-shadow: 0 4px 12px rgba(15, 107, 92, 0.06) !important;
 }
 
 .template-item-name {
