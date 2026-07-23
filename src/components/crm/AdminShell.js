@@ -57,7 +57,6 @@ export default function AdminShell({ onViewChange }) {
 
   const handleLogout = () => {
     logout();
-    onViewChange('public');
   };
 
   const handleNavigate = (paneId) => {
