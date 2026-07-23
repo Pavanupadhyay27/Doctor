@@ -4,9 +4,13 @@ import React, { useState } from 'react';
 import { useCRM } from '@/context/CRMState';
 
 export default function Calendar() {
-  const { appointments, leads, updateAppointmentDate } = useCRM();
+  const { appointments, leads, updateAppointmentDate, setIsBookingModalOpen } = useCRM();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDateStr, setSelectedDateStr] = useState(null);
+  
+  // Default selected date to today's date string
+  const [selectedDateStr, setSelectedDateStr] = useState(() => {
+    return new Date().toISOString().split('T')[0];
+  });
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -80,232 +84,223 @@ export default function Calendar() {
     : [];
 
   return (
-    <div className="calendar-wrapper">
-      {/* Header controls */}
+    <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+      
+      {/* Left Panel: Compact Calendar Month View */}
       <div 
-        style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '24px',
-          background: '#ffffff',
-          padding: '16px 24px',
-          borderRadius: '16px',
-          border: '1px solid rgba(18, 33, 30, 0.05)',
-          boxShadow: '0 4px 12px rgba(18, 33, 30, 0.02)'
+        style={{
+          flex: '1 1 450px',
+          minWidth: '320px',
+          backgroundColor: '#ffffff',
+          borderRadius: '20px',
+          border: '1px solid var(--border)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.015)',
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
-        <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-dark)' }}>
-          {monthNames[month]} {year}
-        </h3>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            onClick={handlePrevMonth} 
-            className="btn btn-outline"
-            style={{ padding: '8px 14px', fontSize: '12.5px' }}
-          >
-            <i className="fas fa-chevron-left"></i> Prev
-          </button>
-          <button 
-            onClick={handleNextMonth} 
-            className="btn btn-outline"
-            style={{ padding: '8px 14px', fontSize: '12.5px' }}
-          >
-            Next <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
-      </div>
-      
-      {/* 7 Day Labels */}
-      <div className="calendar-grid-labels" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', marginBottom: '8px', textAlign: 'center' }}>
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(label => (
-          <div key={label} style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            {label}
-          </div>
-        ))}
-      </div>
-
-      {/* Days Grid */}
-      <div className="calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px' }}>
-        {cells.map((cell, idx) => {
-          const dateStr = cell.date.toISOString().split('T')[0];
-          const dayAppointments = appointments.filter(apt => apt.date === dateStr);
-
-          return (
-            <div 
-              key={idx} 
-              className={`calendar-cell ${cell.isOtherMonth ? 'other-month' : ''} ${dayAppointments.length > 0 ? 'has-events' : ''}`}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, dateStr)}
-              onClick={() => setSelectedDateStr(dateStr)}
+        {/* Header Controls */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h3 style={{ fontSize: '17px', fontWeight: '850', color: 'var(--text-dark)' }}>
+            {monthNames[month]} {year}
+          </h3>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              onClick={handlePrevMonth} 
               style={{
-                minHeight: '76px', /* Reduced size */
-                backgroundColor: '#ffffff',
-                border: '1px solid rgba(18, 33, 30, 0.05)',
-                borderBottom: '3px solid rgba(15, 107, 92, 0.06)', /* 3D Style cell */
-                borderRadius: '12px',
-                padding: '8px',
-                display: 'flex',
-                flexDirection: 'column',
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                border: '1px solid var(--border)',
+                backgroundColor: 'var(--bg-warm)',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                position: 'relative'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)';
-                e.currentTarget.style.borderBottomColor = 'var(--primary)';
-                e.currentTarget.style.boxShadow = '0 6px 14px rgba(18, 33, 30, 0.04)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                e.currentTarget.style.borderBottomColor = 'rgba(15, 107, 92, 0.06)';
-                e.currentTarget.style.boxShadow = 'none';
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text-dark)'
               }}
             >
-              <span style={{ fontSize: '11px', fontWeight: '800', color: cell.isOtherMonth ? 'rgba(30, 42, 40, 0.3)' : 'var(--text-dark)' }}>
-                {cell.dayNum}
-              </span>
-              
-              {/* Event indicators dots/mini-badges */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginTop: '6px', overflow: 'hidden' }}>
-                {dayAppointments.slice(0, 2).map(apt => (
-                  <div 
-                    key={apt.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, apt.id)}
-                    style={{
-                      padding: '2px 5px',
-                      fontSize: '9.5px',
-                      fontWeight: '700',
-                      borderRadius: '4px',
-                      backgroundColor: 'rgba(15, 107, 92, 0.05)',
-                      color: 'var(--primary)',
-                      border: '1px solid rgba(15, 107, 92, 0.1)',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      overflow: 'hidden'
-                    }}
-                    title={`${apt.time} - ${apt.patientName}`}
-                  >
-                    {apt.time} {apt.patientName.split(' ')[0]}
-                  </div>
-                ))}
-                {dayAppointments.length > 2 && (
-                  <div style={{ fontSize: '9px', fontWeight: '750', color: 'var(--text-muted)', textAlign: 'center' }}>
-                    +{dayAppointments.length - 2} more
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+              <i className="fas fa-chevron-left" style={{ fontSize: '11px' }}></i>
+            </button>
+            <button 
+              onClick={handleNextMonth} 
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                border: '1px solid var(--border)',
+                backgroundColor: 'var(--bg-warm)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text-dark)'
+              }}
+            >
+              <i className="fas fa-chevron-right" style={{ fontSize: '11px' }}></i>
+            </button>
+          </div>
+        </div>
 
-      {/* Date Details Modal Popover */}
-      {selectedDateStr && (
-        <div 
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(10, 22, 20, 0.4)',
-            backdropFilter: 'blur(5px)',
-            zIndex: 1100,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px'
-          }}
-          onClick={() => setSelectedDateStr(null)}
-        >
-          {/* 3D modal card */}
-          <div 
-            style={{
-              width: '100%',
-              maxWidth: '480px',
-              backgroundColor: '#ffffff',
-              borderRadius: '24px',
-              border: '1px solid rgba(15, 107, 92, 0.08)',
-              borderBottom: '6px solid var(--primary)', /* 3D bevel */
-              boxShadow: '0 25px 60px -10px rgba(18, 33, 30, 0.15)',
-              padding: '28px',
-              position: 'relative',
-              animation: 'modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid rgba(18, 33, 30, 0.05)', paddingBottom: '14px' }}>
-              <div>
-                <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Daily Schedule</span>
-                <h4 style={{ fontSize: '16.5px', fontWeight: '850', color: 'var(--text-dark)', marginTop: '2px' }}>
-                  {new Date(selectedDateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
-                </h4>
-              </div>
-              <button 
-                onClick={() => setSelectedDateStr(null)}
+        {/* 7 Day Labels */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', marginBottom: '8px', textAlign: 'center' }}>
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(label => (
+            <div key={label} style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {label}
+            </div>
+          ))}
+        </div>
+
+        {/* Days Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
+          {cells.map((cell, idx) => {
+            const dateStr = cell.date.toISOString().split('T')[0];
+            const dayAppointments = appointments.filter(apt => apt.date === dateStr);
+            const isSelected = dateStr === selectedDateStr;
+            const isToday = new Date().toISOString().split('T')[0] === dateStr;
+
+            return (
+              <div 
+                key={idx}
+                onClick={() => setSelectedDateStr(dateStr)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, dateStr)}
                 style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  backgroundColor: '#F4F6F7',
-                  border: 'none',
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer',
+                  height: '46px',
+                  backgroundColor: isSelected 
+                    ? 'rgba(15, 107, 92, 0.08)' 
+                    : isToday 
+                    ? 'rgba(15, 107, 92, 0.03)' 
+                    : '#ffffff',
+                  border: isSelected 
+                    ? '2px solid var(--primary)' 
+                    : isToday 
+                    ? '1px solid var(--primary)' 
+                    : '1px solid rgba(18, 33, 30, 0.05)',
+                  borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  transition: 'all 0.15s ease',
                 }}
               >
-                <i className="fas fa-times"></i>
-              </button>
-            </div>
+                <span style={{ 
+                  fontSize: '12px', 
+                  fontWeight: isSelected || isToday ? '850' : '600', 
+                  color: cell.isOtherMonth 
+                    ? 'rgba(30, 42, 40, 0.25)' 
+                    : isSelected || isToday 
+                    ? 'var(--primary)' 
+                    : 'var(--text-dark)' 
+                }}>
+                  {cell.dayNum}
+                </span>
 
+                {/* Event Dot Indicator */}
+                {dayAppointments.length > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    bottom: '5px',
+                    width: '5px',
+                    height: '5px',
+                    borderRadius: '50%',
+                    backgroundColor: isSelected ? 'var(--primary)' : 'rgba(15, 107, 92, 0.4)'
+                  }}></span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Right Panel: Selected Day Agenda & Details */}
+      <div 
+        style={{
+          flex: '1 1 350px',
+          minWidth: '300px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
+        }}
+      >
+        <div style={{ 
+          backgroundColor: '#ffffff', 
+          borderRadius: '20px', 
+          border: '1px solid var(--border)', 
+          boxShadow: '0 4px 20px rgba(0,0,0,0.015)',
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '320px'
+        }}>
+          {/* Agenda Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid rgba(18, 33, 30, 0.05)', paddingBottom: '12px', marginBottom: '16px' }}>
+            <div>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Daily Agenda</span>
+              <h4 style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-dark)', marginTop: '2px' }}>
+                {selectedDateStr ? new Date(selectedDateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : 'Select a date'}
+              </h4>
+            </div>
+            <span style={{ fontSize: '11px', fontWeight: '750', padding: '4px 10px', borderRadius: '12px', backgroundColor: 'rgba(15, 107, 92, 0.06)', color: 'var(--primary)' }}>
+              {selectedDateAppointments.length} {selectedDateAppointments.length === 1 ? 'Booking' : 'Bookings'}
+            </span>
+          </div>
+
+          {/* Agenda Appointments List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', flexGrow: 1, maxHeight: '340px' }}>
             {selectedDateAppointments.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '36px 12px', color: 'var(--text-muted)' }}>
-                <i className="far fa-calendar-times" style={{ fontSize: '32px', color: 'rgba(15, 107, 92, 0.15)', marginBottom: '12px', display: 'block' }}></i>
-                <span style={{ fontSize: '13px' }}>No consultations scheduled on this date.</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 12px', color: 'var(--text-muted)', flexGrow: 1 }}>
+                <i className="far fa-calendar-times" style={{ fontSize: '28px', color: 'rgba(15, 107, 92, 0.15)', marginBottom: '8px' }}></i>
+                <span style={{ fontSize: '12px', fontWeight: '600' }}>No consultations scheduled.</span>
+                <button 
+                  onClick={() => setIsBookingModalOpen(true)}
+                  className="btn btn-primary btn-sm"
+                  style={{ marginTop: '14px', fontSize: '11.5px', padding: '6px 12px', borderRadius: '8px' }}
+                >
+                  <i className="fas fa-plus"></i> Book Consultation
+                </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '300px', overflowY: 'auto', paddingRight: '4px' }}>
-                {selectedDateAppointments.map(apt => {
-                  const lead = leads.find(l => l.id === apt.leadId);
-                  const status = lead ? lead.status : 'New';
-
-                  return (
-                    <div 
-                      key={apt.id}
-                      style={{
-                        padding: '16px',
-                        backgroundColor: '#F4F6F7',
-                        border: '1px solid rgba(18, 33, 30, 0.04)',
-                        borderBottom: '3px solid rgba(15, 107, 92, 0.1)', /* Mini 3D bevel */
-                        borderRadius: '16px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '6px'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-dark)' }}>{apt.patientName}</span>
-                        <span style={{ fontSize: '11px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px', backgroundColor: 'rgba(15, 107, 92, 0.06)', color: 'var(--primary)' }}>
-                          {apt.time}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '12.5px', color: 'var(--primary)', fontWeight: '600' }}>
-                        <i className="fas fa-stethoscope" style={{ fontSize: '11px', marginRight: '6px' }}></i> {apt.treatment}
-                      </div>
-                      {apt.notes && (
-                        <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontStyle: 'italic', borderTop: '1px dashed rgba(18, 33, 30, 0.06)', paddingTop: '6px', marginTop: '2px' }}>
-                          Note: {apt.notes}
-                        </div>
-                      )}
+              selectedDateAppointments.map(apt => (
+                <div 
+                  key={apt.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, apt.id)}
+                  style={{
+                    padding: '14px 16px',
+                    backgroundColor: '#F8FAFC',
+                    border: '1px solid rgba(18, 33, 30, 0.04)',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    cursor: 'grab'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-dark)' }}>{apt.patientName}</span>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <i className="far fa-clock"></i> {apt.time}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <i className="fas fa-stethoscope"></i> {apt.treatment}
+                  </div>
+                  {apt.notes && (
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', borderTop: '1px dashed rgba(18, 33, 30, 0.05)', paddingTop: '4px', marginTop: '2px', fontStyle: 'italic' }}>
+                      {apt.notes}
                     </div>
-                  );
-                })}
-              </div>
+                  )}
+                </div>
+              ))
             )}
           </div>
         </div>
-      )}
+      </div>
+      
     </div>
   );
 }
