@@ -19,6 +19,37 @@ export default function AdminShell({ onViewChange }) {
   // Shared global search term across active panes
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Load initial view from window.location.hash on client-side mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash.replace('#', '');
+      const validPanes = ['dashboard', 'leads', 'kanban', 'patients', 'calendar', 'templates', 'analytics'];
+      if (validPanes.includes(hash)) {
+        setActivePane(hash);
+      }
+    }
+  }, []);
+
+  // Listen to browser Back/Forward history clicks (hash changes)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      const validPanes = ['dashboard', 'leads', 'kanban', 'patients', 'calendar', 'templates', 'analytics'];
+      if (hash && validPanes.includes(hash)) {
+        setActivePane(hash);
+      } else if (!hash) {
+        setActivePane('dashboard');
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
+
   // Automatically reset the global search term when switching sidebar views
   useEffect(() => {
     setSearchTerm('');
@@ -29,10 +60,16 @@ export default function AdminShell({ onViewChange }) {
     onViewChange('public');
   };
 
+  const handleNavigate = (paneId) => {
+    if (typeof window !== 'undefined') {
+      window.location.hash = paneId;
+    }
+  };
+
   const renderActivePane = () => {
     switch (activePane) {
       case 'dashboard': 
-        return <Dashboard onNavigate={setActivePane} />;
+        return <Dashboard onNavigate={handleNavigate} />;
       case 'leads': 
         return <Leads globalSearch={searchTerm} setGlobalSearch={setSearchTerm} />;
       case 'kanban': 
@@ -104,7 +141,9 @@ export default function AdminShell({ onViewChange }) {
               key={item.id} 
               className={`admin-nav-item ${activePane === item.id ? 'active' : ''}`}
               onClick={() => {
-                setActivePane(item.id);
+                if (typeof window !== 'undefined') {
+                  window.location.hash = item.id;
+                }
                 setSidebarOpen(false);
               }}
               title={sidebarCollapsed ? item.label : ""}
