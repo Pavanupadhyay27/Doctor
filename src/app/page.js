@@ -52,6 +52,19 @@ export default function Home() {
     };
   }, [activeView]);
 
+  // Prevent background page scrolling when booking modal is open
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isBookingModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isBookingModalOpen]);
+
   // Quick booking strip state
   const [quickData, setQuickData] = useState({
     name: '',
@@ -744,7 +757,7 @@ export default function Home() {
       {/* Booking Modal Overlay */}
       {isBookingModalOpen && (
         <div className="modal-backdrop active" onClick={() => setIsBookingModalOpen(false)}>
-          <div className="modal-content relative" style={{ maxWidth: '640px', width: '90%', padding: '0px', overflow: 'hidden' }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content relative" style={{ maxWidth: '640px', width: '90%', padding: '0px', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
             <button 
               className="modal-close" 
               onClick={() => setIsBookingModalOpen(false)}
