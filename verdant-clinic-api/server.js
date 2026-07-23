@@ -29,8 +29,27 @@ app.use(helmet());
 app.use(cookieParser(process.env.COOKIE_SECRET || 'cookie_secret_fallback'));
 
 // CORS Configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'https://doctor-three.vercel.app',
+  'https://doctor-three-sigma.vercel.app',
+  'https://doctor-three.sigma.vercel.app'
+];
+
+if (process.env.CLIENT_ORIGIN) {
+  const envOrigins = process.env.CLIENT_ORIGIN.split(',').map(o => o.trim());
+  allowedOrigins.push(...envOrigins);
+}
+
 const corsOptions = {
-  origin: process.env.CLIENT_ORIGIN || process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Fallback to accept other origins but with correct header response
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 };
