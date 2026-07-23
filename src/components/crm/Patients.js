@@ -24,6 +24,16 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
   const [visitType, setVisitType] = useState('Procedure');
   const [visitNotes, setVisitNotes] = useState('');
 
+  // Toast Notification state
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showNotification = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+    }, 4000);
+  };
+
   const activePatient = patients.find(p => p.id === activePatientId);
 
   const filteredPatients = patients.filter(pat => {
@@ -48,7 +58,7 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
       doctor: 'Dr. Ananya Sharma'
     });
     setVisitNotes('');
-    alert('Clinical visit logged successfully.');
+    showNotification('Clinical visit logged successfully.', 'success');
   };
 
   const handleRealUpload = async (e) => {
@@ -58,15 +68,15 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
     // Enforce 10MB limit (10 * 1024 * 1024 bytes)
     const maxSizeBytes = 10 * 1024 * 1024;
     if (file.size > maxSizeBytes) {
-      alert(`File size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the 10MB maximum limit.`);
+      showNotification(`File size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the 10MB limit.`, 'error');
       return;
     }
 
     const success = await addPatientDocument(activePatientId, file);
     if (success) {
-      alert(`"${file.name}" uploaded successfully!`);
+      showNotification(`"${file.name}" uploaded successfully!`, 'success');
     } else {
-      alert('Failed to upload file.');
+      showNotification('Failed to upload file.', 'error');
     }
   };
 
@@ -586,6 +596,53 @@ export default function Patients({ globalSearch, setGlobalSearch }) {
           </div>
         </div>
       )}
+
+      {/* Styled Toast Notification */}
+      <div 
+        style={{
+          position: 'fixed',
+          top: '24px',
+          right: '24px',
+          zIndex: 99999,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          padding: '16px 20px',
+          borderRadius: '16px',
+          backgroundColor: toast.type === 'success' ? '#ffffff' : '#FDF0EE',
+          border: toast.type === 'success' ? '1.5px solid rgba(63, 167, 150, 0.2)' : '1.5px solid rgba(232, 93, 75, 0.2)',
+          boxShadow: '0 20px 40px rgba(10, 22, 20, 0.08)',
+          transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          transform: toast.show ? 'translateY(0)' : 'translateY(-120px)',
+          opacity: toast.show ? 1 : 0,
+          pointerEvents: toast.show ? 'auto' : 'none',
+          maxWidth: '360px'
+        }}
+      >
+        <div style={{
+          width: '28px',
+          height: '28px',
+          borderRadius: '50%',
+          backgroundColor: toast.type === 'success' ? 'rgba(63, 167, 150, 0.1)' : 'rgba(232, 93, 75, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0
+        }}>
+          <i 
+            className={toast.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'} 
+            style={{ color: toast.type === 'success' ? 'var(--success)' : 'var(--danger)', fontSize: '14px' }}
+          ></i>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {toast.type === 'success' ? 'Success' : 'Notice'}
+          </div>
+          <div style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-dark)', marginTop: '2px', lineHeight: '1.3' }}>
+            {toast.message}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
